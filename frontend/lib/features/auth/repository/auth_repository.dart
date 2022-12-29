@@ -72,8 +72,8 @@ class AuthRepository {
           },
         );
 
-        var userProvider = ref.read(currentUserProvider);
-        userProvider.setUser(userRes.body);
+        // var userProvider = ref.read(currentUserProvider);
+        // userProvider.setUser(userRes.body);
       }
     } catch (e) {
       showSnackBar(content: e.toString(), context: context);

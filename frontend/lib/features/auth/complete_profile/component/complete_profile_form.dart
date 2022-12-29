@@ -68,7 +68,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
                   _formKey.currentState!.save();
                   try {
                     bool result = await _sqliteDbHelper.checkEmail(
-                        email: widget.userData.email);
+                        phoneNumber: widget.userData.phoneNumber);
 
                     if (result) {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -82,7 +82,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
                           lastName: lastName!,
                           phoneNumber: phoneNumber!,
                           address: address!,
-                          email: widget.userData.email,
+                          email: widget.userData.phoneNumber,
                           password: widget.userData.password);
                       await _sqliteDbHelper.insertUser(user);
                       Navigator.push(
