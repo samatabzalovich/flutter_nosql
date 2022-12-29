@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">569729108423-mi3e698f1882hgoop9fcei8vencododr.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">569729108423</string>
+    <string name="google_api_key" translatable="false">AIzaSyBgbosazprIS57B7mCKSoo4DVF2oaE0FfY</string>
+    <string name="google_app_id" translatable="false">1:569729108423:android:ec9d368aa81bee694ff1e2</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyBgbosazprIS57B7mCKSoo4DVF2oaE0FfY</string>
+    <string name="google_storage_bucket" translatable="false">hackathon-e-commerce-64a2a.appspot.com</string>
+    <string name="project_id" translatable="false">hackathon-e-commerce-64a2a</string>
+</resources>

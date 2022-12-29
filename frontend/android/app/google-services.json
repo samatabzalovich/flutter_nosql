@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "569729108423",
+    "project_id": "hackathon-e-commerce-64a2a",
+    "storage_bucket": "hackathon-e-commerce-64a2a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:569729108423:android:ec9d368aa81bee694ff1e2",
+        "android_client_info": {
+          "package_name": "com.my_store.store"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "569729108423-mi3e698f1882hgoop9fcei8vencododr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgbosazprIS57B7mCKSoo4DVF2oaE0FfY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "569729108423-mi3e698f1882hgoop9fcei8vencododr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
