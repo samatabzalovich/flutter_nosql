@@ -8,21 +8,19 @@ const auth = require("../middlewares/auth");
 // SIGN UP
 authRouter.post("/api/signup", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { firstName, lastName, phoneNumber, password, address } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ phoneNumber });
     if (existingUser) {
       return res
         .status(400)
-        .json({ msg: "User with same email already exists!" });
+        .json({ msg: "User with same phone number already exists!" });
     }
 
     const hashedPassword = await bcryptjs.hash(password, 8);
 
     let user = new User({
-      email,
-      password: hashedPassword,
-      name,
+      firstName, lastName, phoneNumber, password: hashedPassword, address
     });
     user = await user.save();
     res.json(user);
