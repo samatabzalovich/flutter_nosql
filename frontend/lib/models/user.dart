@@ -5,6 +5,7 @@ class UserModel {
   late final String address;
   late final String email;
   late final String password;
+  String? id;
 
   UserModel(
       {required this.firstName,
@@ -12,7 +13,7 @@ class UserModel {
       required this.phoneNumber,
       required this.address,
       required this.email,
-      required this.password});
+      required this.password, this.id});
 
   Map<String, dynamic> toMap() {
     return {
