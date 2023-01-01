@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-void httpErrorHandle({
+bool httpErrorHandle({
   required http.Response response,
   required BuildContext context,
   required VoidCallback onSuccess,
@@ -11,15 +11,16 @@ void httpErrorHandle({
   switch (response.statusCode) {
     case 200:
       onSuccess();
-      break;
+      return true;
     case 400:
       showSnackBar(context: context, content: jsonDecode(response.body));
-      break;
+      return false;
     case 500:
       showSnackBar(context: context, content: jsonDecode(response.body));
-      break;
+      return false;
     default:
       showSnackBar(context: context, content: jsonDecode(response.body));
+      return false;
   }
 }
 

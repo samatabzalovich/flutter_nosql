@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/features/bloc/favorite/favorite_bloc.dart';
 import 'package:store/features/bloc/order/order_bloc.dart';
 import 'package:store/splash/splash_screen.dart';
@@ -14,7 +15,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp( MyApp());
+  runApp( ProviderScope(child: MyApp(),));
 }
 
 class MyApp extends StatelessWidget {

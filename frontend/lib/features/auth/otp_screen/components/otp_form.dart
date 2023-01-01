@@ -3,9 +3,14 @@ import 'package:store/common/constants/colors.dart';
 import 'package:store/common/constants/form_field_styles.dart';
 import 'package:store/features/widgets/custom_button.dart';
 import 'package:store/features/home/screens/home_screen.dart';
+import 'package:store/models/user.dart';
 
 class OTPForm extends StatefulWidget {
-  const OTPForm({Key? key}) : super(key: key);
+  final String verifictaionId;
+  final String phoneNumber;
+  final UserModel userModel;
+  const OTPForm({Key? key, required this.verifictaionId, required this.phoneNumber, required this.userModel})
+      : super(key: key);
 
   @override
   State<OTPForm> createState() => _OTPFormState();
@@ -61,9 +66,9 @@ class _OTPFormState extends State<OTPForm> {
                   pin2Controller.text +
                   pin3Controller.text +
                   pin4Controller.text;
-              if (pinCode == "1234") {
-                // ScaffoldMessenger.of(context)
-                //     .showSnackBar(SnackBar(content: Text(pinCode)));
+              if (pinCode == widget.verifictaionId) {
+                // We are here 
+                
                 Navigator.pushNamed(context, HomeScreen.routeName);
               }
             },

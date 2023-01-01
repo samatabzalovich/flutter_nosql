@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:store/features/widgets/horizontal_timer.dart';
+import 'package:store/models/user.dart';
 
 import 'otp_form.dart';
 
 class OTPBody extends StatelessWidget {
-  const OTPBody({Key? key}) : super(key: key);
+  final verifictaionId;
+  final phoneNumber;
+  final UserModel userModel;
+  const OTPBody(
+      {Key? key,
+      required this.verifictaionId,
+      required this.phoneNumber,
+      required this.userModel})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,12 +32,12 @@ class OTPBody extends StatelessWidget {
                   color: Colors.black,
                   letterSpacing: 2),
             ),
-            const Text("We sent your code to +963 999 *** ***"),
+            Text("We sent your code to $phoneNumber"),
             const HorizontalTimer(),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.15,
             ),
-            const OTPForm()
+            OTPForm(verifictaionId: verifictaionId,userModel: userModel, phoneNumber: phoneNumber,)
           ],
         ),
       ),

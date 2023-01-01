@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:store/features/auth/repository/auth_repository.dart';
 import 'package:store/models/user.dart';
 import 'package:store/common/constants/colors.dart';
 import 'package:store/features/widgets/custom_page_transition.dart';
@@ -52,8 +54,6 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
           children: [
             firstNameFormField(),
             SizedBox(height: SizeConfig.getProportionateScreenHeight(30)),
-            lastNameFormField(),
-            SizedBox(height: SizeConfig.getProportionateScreenHeight(30)),
             phoneNumberFormField(),
             SizedBox(height: SizeConfig.getProportionateScreenHeight(30)),
             addressFormField(),
@@ -67,16 +67,18 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
                   try {
-                    bool result = await _sqliteDbHelper.checkEmail(
-                        phoneNumber: widget.userData.phoneNumber);
+                    // bool result = await _sqliteDbHelper.checkEmail(
+                    //     phoneNumber: widget.userData.phoneNumber);
+                    AuthRepository auth = AuthRepository(FirebaseAuth.instance);
+                    String? result = await auth.signUpWithPhoneNumber(
+                        context,
+                        widget.userData.phoneNumber,
+                        firstName!,
+                        lastName!,
+                        widget.userData.password,
+                        address!);
 
-                    if (result) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text(
-                            "The email is already existed please try with another one"),
-                        backgroundColor: Colors.black38,
-                      ));
-                    } else {
+                    if (result != null) {
                       UserModel user = UserModel(
                           firstName: firstName!,
                           lastName: lastName!,
@@ -84,12 +86,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
                           address: address!,
                           email: widget.userData.phoneNumber,
                           password: widget.userData.password);
-                      await _sqliteDbHelper.insertUser(user);
-                      Navigator.push(
-                          context,
-                          CustomScaleTransition(
-                              nextPageUrl: OTPScreen.routeName,
-                              nextPage: const OTPScreen()));
+                      auth.signInWithPhone(context, phoneNumber!, user);
                     }
                   } on Exception {}
                 }
