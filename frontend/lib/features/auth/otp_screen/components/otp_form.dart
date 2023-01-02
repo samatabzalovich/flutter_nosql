@@ -1,26 +1,36 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/common/constants/colors.dart';
 import 'package:store/common/constants/form_field_styles.dart';
+import 'package:store/features/auth/repository/auth_repository.dart';
+import 'package:store/features/bloc/current_user/current_user.dart';
 import 'package:store/features/widgets/custom_button.dart';
 import 'package:store/features/home/screens/home_screen.dart';
 import 'package:store/models/user.dart';
 
-class OTPForm extends StatefulWidget {
+class OTPForm extends ConsumerStatefulWidget {
   final String verifictaionId;
   final String phoneNumber;
   final UserModel userModel;
-  const OTPForm({Key? key, required this.verifictaionId, required this.phoneNumber, required this.userModel})
+  const OTPForm(
+      {Key? key,
+      required this.verifictaionId,
+      required this.phoneNumber,
+      required this.userModel})
       : super(key: key);
 
   @override
-  State<OTPForm> createState() => _OTPFormState();
+  ConsumerState<OTPForm> createState() => _OTPFormState();
 }
 
-class _OTPFormState extends State<OTPForm> {
+class _OTPFormState extends ConsumerState<OTPForm> {
   late final TextEditingController pin1Controller,
       pin2Controller,
       pin3Controller,
-      pin4Controller;
+      pin4Controller,
+      pin5Controller,
+      pin6Controller;
 
   @override
   void initState() {
@@ -29,6 +39,8 @@ class _OTPFormState extends State<OTPForm> {
     pin2Controller = TextEditingController();
     pin3Controller = TextEditingController();
     pin4Controller = TextEditingController();
+    pin5Controller = TextEditingController();
+    pin6Controller = TextEditingController();
   }
 
   @override
@@ -50,7 +62,15 @@ class _OTPFormState extends State<OTPForm> {
                   lastNode: false,
                   controller: pin3Controller),
               buildOTPField(
-                  firstNode: false, lastNode: true, controller: pin4Controller)
+                  firstNode: false,
+                  lastNode: false,
+                  controller: pin4Controller),
+              buildOTPField(
+                  firstNode: false,
+                  lastNode: false,
+                  controller: pin5Controller),
+              buildOTPField(
+                  firstNode: false, lastNode: true, controller: pin6Controller)
             ],
           ),
           SizedBox(
@@ -61,15 +81,28 @@ class _OTPFormState extends State<OTPForm> {
             title: "Continue",
             backgroundColor: primaryColor,
             forgroundColor: Colors.white,
-            onPressed: () {
+            onPressed: () async {
               String pinCode = pin1Controller.text +
                   pin2Controller.text +
                   pin3Controller.text +
-                  pin4Controller.text;
-              if (pinCode == widget.verifictaionId) {
-                // We are here 
-                
-                Navigator.pushNamed(context, HomeScreen.routeName);
+                  pin4Controller.text +
+                  pin5Controller.text +
+                  pin6Controller.text;
+              // print(widget.verifictaionId);
+
+              // We are here
+              final auth = ref.read(authRepositoryProvider);
+              auth.verifyOTP(
+                  context: context,
+                  verificationId: widget.verifictaionId,
+                  userOTP: pinCode);
+              String? result =
+                  await auth.signUpWithPhoneNumber(context, widget.userModel);
+              if (result != null) {
+                UserModel user = UserModel.fromJson(result);
+                ref.read(currentUserProvider).setUser(user, context);
+                Navigator.pushNamedAndRemoveUntil(
+                    context, HomeScreen.routeName, (route) => false);
               }
             },
           ),
@@ -126,6 +159,8 @@ class _OTPFormState extends State<OTPForm> {
     pin2Controller.dispose();
     pin3Controller.dispose();
     pin4Controller.dispose();
+    pin5Controller.dispose();
+    pin6Controller.dispose();
     super.dispose();
   }
 }

@@ -12,7 +12,6 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 const DB =
   "mongodb+srv://abzalovich:pa55word@cluster0.rclnthr.mongodb.net/?retryWrites=true&w=majority";
-
 // middleware
 app.use(express.json());
 app.use(authRouter);

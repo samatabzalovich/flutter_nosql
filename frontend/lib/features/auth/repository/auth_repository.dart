@@ -1,11 +1,10 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:store/features/auth/otp_screen/otp_screen.dart';
+import 'package:store/features/bloc/current_user/current_user.dart';
+import 'package:store/features/home/screens/home_screen.dart';
 import 'package:store/features/widgets/custom_page_transition.dart';
 import 'package:store/models/user.dart';
 import 'package:http/http.dart' as http;
@@ -14,38 +13,90 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../common/Utilities/error_handler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+final authRepositoryProvider = Provider<AuthRepository>(
+    (ref) => AuthRepository(FirebaseAuth.instance, ref));
+
+final userDataAuthProvider = FutureProvider((ref) {
+  final authController = ref.watch(authRepositoryProvider);
+  return authController.getCurrentUsersData();
+});
+
 class AuthRepository {
   final FirebaseAuth auth;
-  String uri = 'http://192.168.1.71:5000';
-  AuthRepository(this.auth);
-  Future<String?> signUpWithPhoneNumber(
-    BuildContext context,
-    String phoneNumber,
-    String firstName,
-    String lastName,
-    String password,
-    String address,
-  ) async {
+  final ProviderRef ref;
+  String uri = 'http://192.168.1.119:3000';
+  AuthRepository(this.auth, this.ref);
+  void verifyPhoneNumber(
+      BuildContext context,
+      String phoneNumber,
+      String firstName,
+      String lastName,
+      String password,
+      String address,
+      String email) async {
     try {
-      final reqBody = <String, String>{
-        "firstName": firstName,
-        "lastName": lastName,
-        "phoneNumber": phoneNumber,
-        "password": password,
-        "address": address,
-      };
+      UserModel user = UserModel(
+        firstName: firstName,
+        lastName: lastName,
+        phoneNumber: phoneNumber,
+        address: address,
+        email: email,
+        password: password,
+        cart: [],
+        token: '',
+        type: 'user',
+      );
+
+      await auth.verifyPhoneNumber(
+          phoneNumber: "+7 $phoneNumber",
+          verificationCompleted: (PhoneAuthCredential credential) async =>
+              await auth.signInWithCredential(credential),
+          verificationFailed: (e) => throw Exception(e.message),
+          codeSent: ((verificationId, forceResendingToken) => Navigator.push(
+              context,
+              CustomScaleTransition(
+                  nextPageUrl: OTPScreen.routeName,
+                  nextPage: OTPScreen(
+                      verifictaionId: verificationId,
+                      phoneNumber: phoneNumber,
+                      userModel: user)))),
+          codeAutoRetrievalTimeout: ((verificationId) {}));
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.message!)));
+    }
+  }
+
+  void verifyOTP({
+    required BuildContext context,
+    required String verificationId,
+    required String userOTP,
+  }) async {
+    try {
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: userOTP,
+      );
+      await auth.signInWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      showSnackBar(context: context, content: e.message!);
+    }
+  }
+
+  Future<String?> signUpWithPhoneNumber(
+      BuildContext context, UserModel user) async {
+    try {
       http.Response res = await http.post(Uri.parse('$uri/api/signup'),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
           },
-          body: jsonEncode(reqBody));
+          body: user.toJson());
+
       bool isOk = httpErrorHandle(
         response: res,
         context: context,
         onSuccess: () {
-          showSnackBar(
-              context: context,
-              content: 'Account will be created after you verified number');
+          showSnackBar(context: context, content: 'Acount created');
         },
       );
       if (isOk) {
@@ -58,54 +109,64 @@ class AuthRepository {
     return null;
   }
 
-  void getCurrentUsersData(BuildContext context) async {
+  Future<bool> signInUser({
+    required BuildContext context,
+    required String phoneNumber,
+    required String password,
+  }) async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('x-auth-token');
-
-      if (token == null) {
-        prefs.setString('x-auth-token', '');
-      }
-
-      var tokenRes = await http.post(
-        Uri.parse('$uri/tokenIsValid'),
+      http.Response res = await http.post(
+        Uri.parse('$uri/api/signin'),
+        body: jsonEncode({
+          'phoneNumber': phoneNumber,
+          'password': password,
+        }),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
-          'x-auth-token': token!
         },
       );
-
-      var response = jsonDecode(tokenRes.body);
-
-      if (response == true) {
-        http.Response userRes = await http.get(
-          Uri.parse('$uri/user-data'),
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-            'x-auth-token': token
-          },
-        );
-
-        // var userProvider = ref.read(currentUserProvider);
-        // userProvider.setUser(userRes.body);
+      bool isOk = httpErrorHandle(
+        response: res,
+        context: context,
+        onSuccess: () async {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          UserModel user = UserModel.fromJson(res.body);
+          ref.read(currentUserProvider).setUser(user, context);
+          await prefs.setString('x-auth-token', user.token!);
+        },
+      );
+      if (!isOk) {
+        return false;
       }
+      return true;
     } catch (e) {
-      showSnackBar(content: e.toString(), context: context);
+      showSnackBar(context: context, content: e.toString());
+      return false;
     }
   }
 
-  void signInWithPhone(BuildContext context, String phoneNumber, UserModel user) async {
-    try {
-      await auth.verifyPhoneNumber(
-          verificationCompleted: (PhoneAuthCredential credential) async =>
-              await auth.signInWithCredential(credential),
-          verificationFailed: (e) => throw Exception(e.message),
-          codeSent: ((verificationId, forceResendingToken) =>
-              Navigator.push(context, CustomScaleTransition(nextPageUrl: OTPScreen.routeName, nextPage: OTPScreen(verifictaionId: verificationId, phoneNumber: phoneNumber, userModel: user)))),
-          codeAutoRetrievalTimeout: ((verificationId) {}));
-    } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.message!)));
+  Future<UserModel?> getCurrentUsersData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('x-auth-token');
+
+    if (token == null) {
+      prefs.setString('x-auth-token', '');
+      return null;
     }
+
+    var tokenRes = await http.post(
+      Uri.parse('$uri/tokenIsValid'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'x-auth-token': token!
+      },
+    );
+
+    var response = jsonDecode(tokenRes.body);
+    UserModel? res;
+    if (response != false) {
+      res = UserModel.fromJson(tokenRes.body);
+    }
+    return res;
   }
 }

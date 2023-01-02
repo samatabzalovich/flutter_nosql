@@ -2,11 +2,20 @@ const mongoose = require("mongoose");
 const { productSchema } = require("./product");
 
 const userSchema = mongoose.Schema({
-  name: {
+  firstName: {
     required: true,
     type: String,
     trim: true,
   },
+  lastName: {
+    required: true,
+    type: String,
+    trim: true,
+  },
+  phoneNumber: {required: true,
+    type: String,
+    trim: true},
+
   email: {
     required: true,
     type: String,

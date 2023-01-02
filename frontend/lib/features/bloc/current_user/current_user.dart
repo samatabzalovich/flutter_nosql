@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:store/common/Utilities/error_handler.dart';
 import 'package:store/models/user.dart';
 
 final currentUserProvider = ChangeNotifierProvider<CurrentUserData>((ref) {
@@ -12,20 +14,25 @@ class CurrentUserData extends ChangeNotifier {
     return _currentUser != null;
   }
 
-  void setUser(firstName, lastName, phoneNumber, address, email, password, id) {
-    _currentUser = UserModel(
-        firstName: firstName,
-        lastName: lastName,
-        phoneNumber: phoneNumber,
-        address: address,
-        email: email,
-        password: password, id: id);
+  void setUser(UserModel user, BuildContext context) async {
+    _currentUser = user;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = user.token!;
+    bool res = await prefs.setString('x-auth-token', token);
+    if (res) {
+      showSnackBar(context: context, content: 'User is saved');
+    }
     notifyListeners();
   }
-  void signOut()  {
+
+  Future<bool> signOut() async {
     // update state
     _currentUser = null;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool res = await prefs.remove('x-auth-token');
+
     // and notify any listeners
     notifyListeners();
+    return res;
   }
 }
