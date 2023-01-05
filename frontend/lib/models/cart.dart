@@ -2,7 +2,7 @@ import 'package:store/models/product.dart';
 import 'cart_item.dart';
 
 class Cart{
-   late final List<CartItem> products;
+    late final List<CartItem> products;
 
   Cart({required this.products});
 

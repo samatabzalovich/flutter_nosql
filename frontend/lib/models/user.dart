@@ -56,10 +56,14 @@ class UserModel {
   final String email;
   final String password;
   final String type;
+  final String? profilePic;
   String? token;
   final List<dynamic> cart;
 
-  UserModel({required this.firstName, required this.lastName, required this.phoneNumber, 
+  UserModel({this.profilePic, 
+    required this.firstName,
+    required this.lastName,
+    required this.phoneNumber,
     this.id,
     required this.email,
     required this.password,
@@ -83,6 +87,9 @@ class UserModel {
     result.addAll({'email': email});
     result.addAll({'password': password});
     result.addAll({'type': type});
+    if(profilePic != null){
+      result.addAll({'profilePic': profilePic});
+    }
     if(token != null){
       result.addAll({'token': token});
     }
@@ -101,6 +108,7 @@ class UserModel {
       email: map['email'] ?? '',
       password: map['password'] ?? '',
       type: map['type'] ?? '',
+      profilePic: map['profilePic'],
       token: map['token'],
       cart: List<dynamic>.from(map['cart']),
     );

@@ -1,5 +1,82 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:store/models/rating.dart';
+
+// class Product {
+//   final String id;
+//   final String title;
+//   final String owner;
+//   final Map<String, String> description;
+//   final String image;
+//   final List<String> images;
+//   final List<String> colors;
+//   final List<Rating>? rating;
+//   final int quantity;
+//   final double price;
+//   final String category;
+//   bool? isFavourite;
+//   Product({
+//     required this.id,
+//     required this.title,
+//     required this.owner,
+//     required this.description,
+//     required this.image,
+//     required this.images,
+//     required this.colors,
+//     this.rating,
+//     required this.quantity,
+//     required this.price,
+//     required this.category,
+//     this.isFavourite = false,
+//   });
+  
+
+
+//   Map<String, dynamic> toMap() {
+//     final result = <String, dynamic>{};
+  
+//     result.addAll({'id': id});
+//     result.addAll({'title': title});
+//     result.addAll({'owner': owner});
+//     result.addAll({'description': description});
+//     result.addAll({'image': image});
+//     result.addAll({'images': images});
+//     result.addAll({'colors': colors});
+//     if(rating != null){
+//       result.addAll({'rating': rating!.map((x) => x?.toMap()).toList()});
+//     }
+//     result.addAll({'quantity': quantity});
+//     result.addAll({'price': price});
+//     result.addAll({'category': category});
+//     if(isFavourite != null){
+//       result.addAll({'isFavourite': isFavourite});
+//     }
+  
+//     return result;
+//   }
+
+//   factory Product.fromMap(Map<String, dynamic> map) {
+//     return Product(
+//       id: map['id'] ?? '',
+//       title: map['title'] ?? '',
+//       owner: map['owner'] ?? '',
+//       description: Map<String, String>.from(map['description']),
+//       image: map['image'] ?? '',
+//       images: List<String>.from(map['images']),
+//       colors: List<String>.from(map['colors']),
+//       rating: map['rating'] != null ? List<Rating>.from(map['rating']?.map((x) => Rating.fromMap(x))) : null,
+//       quantity: map['quantity']?.toInt() ?? 0,
+//       price: map['price']?.toDouble() ?? 0.0,
+//       category: map['category'] ?? '',
+//       isFavourite: map['isFavourite'],
+//     );
+//   }
+
+//   String toJson() => json.encode(toMap());
+
+//   factory Product.fromJson(String source) => Product.fromMap(json.decode(source));
+// }
 class Product {
   late final int id;
   late final String title;
@@ -70,8 +147,6 @@ class Product {
         isPopular: isPopular,
       );
 }
-
-// Demo data
 List<Product> demoProducts = [
   Product(
     id: 1,

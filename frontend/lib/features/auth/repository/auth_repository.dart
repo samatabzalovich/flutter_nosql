@@ -13,6 +13,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../common/Utilities/error_handler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../common/constants/routes.dart';
+
 final authRepositoryProvider = Provider<AuthRepository>(
     (ref) => AuthRepository(FirebaseAuth.instance, ref));
 
@@ -24,7 +26,6 @@ final userDataAuthProvider = FutureProvider((ref) {
 class AuthRepository {
   final FirebaseAuth auth;
   final ProviderRef ref;
-  String uri = 'http://192.168.1.119:3000';
   AuthRepository(this.auth, this.ref);
   void verifyPhoneNumber(
       BuildContext context,
@@ -158,7 +159,7 @@ class AuthRepository {
       Uri.parse('$uri/tokenIsValid'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'x-auth-token': token!
+        'x-auth-token': token
       },
     );
 
