@@ -4,18 +4,26 @@ const admin = require("../middlewares/admin");
 const { Product } = require("../models/product");
 const Order = require("../models/order");
 const { PromiseProvider } = require("mongoose");
+const Category = require("../models/category");
 
 // Add product
 adminRouter.post("/admin/add-product", admin, async (req, res) => {
   try {
-    const { name, description, images, quantity, price, category } = req.body;
+    const { title, owner, description,image, images, colors,quantity, price,  category } = req.body;
     let product = new Product({
-      name,
-      description,
-      images,
-      quantity,
-      price,
-      category,
+      title, owner, description,image, images, colors,quantity, price,  category
+    });
+    product = await product.save();
+    res.json(product);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+adminRouter.post("/admin/add-category", admin, async (req, res) => {
+  try {
+    const { title, image } = req.body;
+    let product = new Category({
+      title, image
     });
     product = await product.save();
     res.json(product);
@@ -44,7 +52,17 @@ adminRouter.post("/admin/delete-product", admin, async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
-
+adminRouter.post("/admin/update-product", admin, async (req, res) => {
+  try {
+    const { id ,title, owner, description,image, images, colors,quantity, price,  category } = req.body;
+    console.log(id);
+    Product.findByIdAndUpdate(id, {title, owner, description,image, images, colors,quantity, price,  category}, (err, product) => {
+      res.json(product);
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 adminRouter.get("/admin/get-orders", admin, async (req, res) => {
   try {
     const orders = await Order.find({});

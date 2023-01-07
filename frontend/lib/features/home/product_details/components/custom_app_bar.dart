@@ -4,7 +4,7 @@ import 'package:store/models/product.dart';
 import 'custom_back_button.dart';
 
 class CustomAppBar extends StatefulWidget {
-  final int productId;
+  final String productId;
   late bool isProductFavourite;
    CustomAppBar({
     Key? key,

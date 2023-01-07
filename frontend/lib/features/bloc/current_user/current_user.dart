@@ -23,9 +23,6 @@ class CurrentUserData extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = user.token!;
     bool res = await prefs.setString('x-auth-token', token);
-    if (res) {
-      showSnackBar(context: context, content: 'User is saved');
-    }
     notifyListeners();
   }
 

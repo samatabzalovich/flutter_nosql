@@ -37,6 +37,7 @@ class AuthRepository {
       String email) async {
     try {
       UserModel user = UserModel(
+        id: '',
         firstName: firstName,
         lastName: lastName,
         phoneNumber: phoneNumber,
@@ -167,6 +168,7 @@ class AuthRepository {
     UserModel? res;
     if (response != false) {
       res = UserModel.fromJson(tokenRes.body);
+      res.token = token;
     }
     return res;
   }

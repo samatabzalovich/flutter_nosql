@@ -47,8 +47,10 @@
 
 import 'dart:convert';
 
+import 'package:store/models/cart_item.dart';
+
 class UserModel {
-  String? id;
+  final String id;
   final String firstName;
   final String lastName;
   final String phoneNumber;
@@ -58,13 +60,13 @@ class UserModel {
   final String type;
   final String? profilePic;
   String? token;
-  final List<dynamic> cart;
+  final List<CartItem> cart;
 
   UserModel({this.profilePic, 
     required this.firstName,
     required this.lastName,
     required this.phoneNumber,
-    this.id,
+    required this.id,
     required this.email,
     required this.password,
     required this.address,
@@ -74,12 +76,11 @@ class UserModel {
   });
 
 
+
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
   
-    if(id != null){
-      result.addAll({'id': id});
-    }
+    result.addAll({'_id': id});
     result.addAll({'firstName': firstName});
     result.addAll({'lastName': lastName});
     result.addAll({'phoneNumber': phoneNumber});
@@ -93,14 +94,14 @@ class UserModel {
     if(token != null){
       result.addAll({'token': token});
     }
-    result.addAll({'cart': cart});
+    result.addAll({'cart': cart.map((x) => x.toMap()).toList()});
   
     return result;
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      id: map['id'],
+      id: map['_id'] ?? '',
       firstName: map['firstName'] ?? '',
       lastName: map['lastName'] ?? '',
       phoneNumber: map['phoneNumber'] ?? '',
@@ -110,11 +111,39 @@ class UserModel {
       type: map['type'] ?? '',
       profilePic: map['profilePic'],
       token: map['token'],
-      cart: List<dynamic>.from(map['cart']),
+      cart: List<CartItem>.from(map['cart']?.map((x) => CartItem.fromMap(x))),
     );
   }
 
   String toJson() => json.encode(toMap());
 
   factory UserModel.fromJson(String source) => UserModel.fromMap(json.decode(source));
+
+  UserModel copyWith({
+    String? id,
+    String? firstName,
+    String? lastName,
+    String? phoneNumber,
+    String? address,
+    String? email,
+    String? password,
+    String? type,
+    String? profilePic,
+    String? token,
+    List<CartItem>? cart,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      address: address ?? this.address,
+      email: email ?? this.email,
+      password: password ?? this.password,
+      type: type ?? this.type,
+      profilePic: profilePic ?? this.profilePic,
+      token: token ?? this.token,
+      cart: cart ?? this.cart,
+    );
+  }
 }

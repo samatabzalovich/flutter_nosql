@@ -37,9 +37,6 @@ class MyApp extends ConsumerWidget {
         BlocProvider<OrderBloc>(
           create: (_) => OrderBloc(),
         ),
-        BlocProvider<CartBloc>(
-          create: (_) => CartBloc(),
-        ),
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,

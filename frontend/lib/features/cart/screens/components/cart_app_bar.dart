@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/common/Utilities/size_config.dart';
 import 'package:store/common/constants/colors.dart';
-import 'package:store/features/bloc/cart/cart_bloc.dart';
-import 'package:store/features/bloc/cart/cart_event.dart';
+import 'package:store/features/bloc/cart/cart_provider.dart';
+// import 'package:store/features/bloc/cart/cart_bloc.dart';
+// import 'package:store/features/bloc/cart/cart_event.dart';
 
-class CartAppBar extends StatelessWidget {
+class CartAppBar extends ConsumerWidget {
   const CartAppBar({
     Key? key,
   }) : super(key: key);
@@ -13,8 +15,8 @@ class CartAppBar extends StatelessWidget {
   Size get preferredSize => Size.fromHeight(AppBar().preferredSize.height);
 
   @override
-  Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<CartBloc>(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    // final bloc = BlocProvider.of<CartBloc>(context);
     return SafeArea(
       child: Column(
         children: [
@@ -58,7 +60,8 @@ class CartAppBar extends StatelessWidget {
                     color: Colors.redAccent,
                   ),
                   onTap: () {
-                    bloc.add(const ClearCartContentEvent());
+                    // bloc.add(const ClearCartContentEvent());
+                    ref.read(cartProvider).removeProductsFromCart(context);
                   },
                 )
               ],

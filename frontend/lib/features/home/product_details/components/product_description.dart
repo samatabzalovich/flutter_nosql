@@ -25,7 +25,7 @@ class ProductDescription extends StatelessWidget {
           // Product's title widget
           Padding(
             padding: EdgeInsets.only(
-                 bottom: SizeConfig.getProportionateScreenHeight(10)
+                  bottom: SizeConfig.getProportionateScreenHeight(10)
               ),
             child: Center(
               child: Text(product.title,
@@ -50,7 +50,7 @@ class ProductDescription extends StatelessWidget {
                 children: [
                   // Product's Headline
                   Text(
-                      product.description["headline"]!,
+                      product.description,
                       style: productHeadlineStyle,
                   ),
                   SizedBox(height: SizeConfig.getProportionateScreenHeight(5),),
@@ -58,7 +58,7 @@ class ProductDescription extends StatelessWidget {
                   Opacity(
                     opacity: 0.50,
                     child: Text(
-                      product.description["description"]!,
+                      product.description,
                       maxLines: 3,
                       style: productDescriptionStyle,
                     ),

@@ -39,7 +39,6 @@ authRouter.post("/api/signin", async (req, res) => {
         .status(400)
         .json({ msg: "User with this phone number does not exist!" });
     }
-
     const isMatch = await bcryptjs.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ msg: "Incorrect password." });

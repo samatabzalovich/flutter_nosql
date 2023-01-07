@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:store/features/bloc/cart/cart_bloc.dart';
-import 'package:store/features/bloc/cart/cart_event.dart';
-import 'package:store/features/bloc/cart/cart_state.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/features/bloc/cart/cart_provider.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:store/features/bloc/cart/cart_bloc.dart';
+// import 'package:store/features/bloc/cart/cart_event.dart';
+// import 'package:store/features/bloc/cart/cart_state.dart';
 import 'package:store/features/cart/screens/components/no_items_found.dart';
 import 'package:store/features/widgets/banner.dart';
 import 'package:store/models/cart.dart';
@@ -11,30 +13,31 @@ import 'package:store/common/constants/colors.dart';
 import 'package:store/features/cart/screens/checkout/checkout_screen.dart';
 import 'package:store/features/widgets/custom_page_transition.dart';
 import 'package:store/features/widgets/default_button.dart';
+import 'package:store/models/cart_item.dart';
 
 import 'cart_card.dart';
 
-class CartBody extends StatefulWidget {
+class CartBody extends ConsumerStatefulWidget {
   const CartBody({Key? key}) : super(key: key);
 
   @override
   _CartBodyState createState() => _CartBodyState();
 }
 
-class _CartBodyState extends State<CartBody> {
+class _CartBodyState extends ConsumerState<CartBody> {
   late final bloc;
   @override
   void initState() {
 
     super.initState();
-    bloc = BlocProvider.of<CartBloc>(context);
+    // bloc = BlocProvider.of<CartBloc>(context);
   }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: BlocBuilder(
-        bloc: BlocProvider.of<CartBloc>(context),
-        builder:(BuildContext context, CartState state){
+      child: FutureBuilder(
+        future: ref.watch(cartProvider).cartItems,
+        builder: (BuildContext context, AsyncSnapshot<List<CartItem>> snapshot){
           return Padding(
           padding: EdgeInsets.symmetric(
             horizontal: SizeConfig.getProportionateScreenWidth(20)
@@ -49,21 +52,21 @@ class _CartBodyState extends State<CartBody> {
               // List of cart's products
               Flexible(
                 flex: 3,
-                child: (state is CartSuccessFetchDataState && state.cartItems.isNotEmpty
-                || state is CartItemRemovedSuccessfulyState) ?
+                child: (snapshot.connectionState == ConnectionState.waiting) ?
+                          CircularProgressIndicator() : (snapshot.hasData) ? (snapshot.data!.isNotEmpty) ?
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20.0),
                             child: ListView.builder(
-                              itemCount: demoCart.products.length,
+                              itemCount: snapshot.data!.length,
                               itemBuilder: (context, index) => Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 10),
                                 child: Container(
                                   color: Colors.white,
                                   child: Dismissible(
-                                    key: Key(demoCart.products[index].product.id.toString()),
+                                    key: Key(snapshot.data![index].product.id.toString()),
                                     direction: DismissDirection.endToStart,
                                     onDismissed: (direction){
-                                      bloc.add(RemoveProductFromCartEvent(index));
+                                      ref.read(cartProvider).removeFromCart(snapshot.data![index], context);
                                     },
                                     background: Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -78,14 +81,13 @@ class _CartBodyState extends State<CartBody> {
                                         ],
                                       ),
                                     ),
-                                    child: CartItemCard(cartItem: demoCart.products[index],itemIndex: index),
+                                    child: CartItemCard(cartItem: snapshot.data![index], itemIndex: index),
                                   ),
                                 ),
                               ),
                             ),
                           )
-                              :  const NoItemsFound(),
-
+                              :  const NoItemsFound() :NoItemsFound() ,
               ),
               const SizedBox(height: 45,),
               Column(
