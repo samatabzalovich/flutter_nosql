@@ -1,32 +1,39 @@
 
-class Category{
-  late final int id;
-  late final String name;
-  late final String image;
+import 'dart:convert';
 
-  Category({required this.id,required this.name,required this.image});
+import 'package:flutter/widgets.dart';
 
-  Map<String, dynamic> toMap()
-  {
-    return {
-      'id' :id,
-      'name' : name,
-      'image': image,
-    };
+class Category extends ChangeNotifier {
+  final int id;
+  final String title;
+  final String image;
+  Category({
+    required this.id,
+    required this.title,
+    required this.image,
+  });
+
+  Map<String, dynamic> toMap() {
+    final result = <String, dynamic>{};
+  
+    result.addAll({'id': id});
+    result.addAll({'title': title});
+    result.addAll({'image': image});
+  
+    return result;
   }
-  Category.fromMap(dynamic map){
-    id = map['id'];
-    name = map['name'];
-    image = map['image'];
+
+  factory Category.fromMap(Map<String, dynamic> map) {
+    return Category(
+      id: map['id']?.toInt() ?? 0,
+      title: map['title'] ?? '',
+      image: map['image'] ?? '',
+    );
   }
 
-  Category toEntity() => Category(
-      id: id,
-      name: name,
-    image: image,
-  );
+  String toJson() => json.encode(toMap());
 
-
+  factory Category.fromJson(String source) => Category.fromMap(json.decode(source));
 }
 
 

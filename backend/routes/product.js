@@ -14,6 +14,15 @@ productRouter.get("/api/products/", auth, async (req, res) => {
   }
 });
 
+productRouter.get("/api/categories", auth, async (req, res) => {
+  try {
+    const categories = await Category.find({});
+    res.json(categories);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 productRouter.get("/api/categories/", auth, async (req, res) => {
   try {
     const categories = await Category.find({});

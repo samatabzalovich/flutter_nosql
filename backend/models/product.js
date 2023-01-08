@@ -43,10 +43,10 @@ const productSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
-  category: {
+  category: [{
     type: mongoose.Types.ObjectId,
     required: true,
-  },
+  }],
   ratings: [ratingSchema],
 });
 

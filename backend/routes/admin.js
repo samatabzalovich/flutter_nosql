@@ -31,7 +31,19 @@ adminRouter.post("/admin/add-category", admin, async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
-
+adminRouter.get("/admin/add-category", admin, async (req, res) => {
+  try {
+    const {title, image} = req.body;
+    let category = new Category({
+      title,
+      image
+    });
+    category = await category.save();
+    res.json(category);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 // Get all your products
 adminRouter.get("/admin/get-products", admin, async (req, res) => {
   try {
