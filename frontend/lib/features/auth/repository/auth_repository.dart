@@ -24,7 +24,7 @@ final userDataAuthProvider = FutureProvider((ref) {
 class AuthRepository {
   final FirebaseAuth auth;
   final ProviderRef ref;
-  String uri = 'http://192.168.1.119:3000';
+  String uri = 'http://192.168.1.67:3000';
   AuthRepository(this.auth, this.ref);
   void verifyPhoneNumber(
       BuildContext context,
