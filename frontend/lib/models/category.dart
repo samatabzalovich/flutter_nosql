@@ -1,10 +1,7 @@
-
 import 'dart:convert';
 
-import 'package:flutter/widgets.dart';
-
-class Category extends ChangeNotifier {
-  final int id;
+class Category {
+  final String id;
   final String title;
   final String image;
   Category({
@@ -15,36 +12,38 @@ class Category extends ChangeNotifier {
 
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
-  
+
     result.addAll({'id': id});
     result.addAll({'title': title});
     result.addAll({'image': image});
-  
+
     return result;
   }
 
   factory Category.fromMap(Map<String, dynamic> map) {
-    return Category(
-      id: map['id']?.toInt() ?? 0,
+    Category temp = Category(
+      id: map['_id'] ?? '',
       title: map['title'] ?? '',
       image: map['image'] ?? '',
     );
+    return temp;
   }
 
   String toJson() => json.encode(toMap());
 
-  factory Category.fromJson(String source) => Category.fromMap(json.decode(source));
+  factory Category.fromJson(String source) =>
+      Category.fromMap(jsonDecode(source));
 }
 
 
-List<Map<String, dynamic>> categories = [
-  {"title": "Wearable"},
-  {"title": "Laptop"},
-  {"title": "Phones"},
-  {"title": "Clock"},
-  {"title": "Smartphone"},
-  {"title": "Fashion"},
-  {"title": "Computers"},
-  {"title": "Shoes"},
-  {"title": "Drones"},
-];
+// List<Map<String, dynamic>> categoriess = [
+//   {"title": "Wearable"},
+//   {"title": "Laptop"},
+//   {"title": "Phones"},
+//   {"title": "Clock"},
+//   {"title": "Smartphone"},
+//   {"title": "Fashion"},
+//   {"title": "Computers"},
+//   {"title": "Shoes"},
+//   {"title": "Drones"},
+// ];

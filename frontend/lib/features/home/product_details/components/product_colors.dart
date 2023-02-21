@@ -37,7 +37,7 @@ class _ProductColorListState extends State<ProductColorList> {
               ...List.generate(widget.productColors.length,
                       (index) =>  productColorCard(
                       colorIndex : index,
-                      productColor: widget.productColors[index]["color"],
+                      productColor: int.parse(widget.productColors[index]["color"].substring(2), radix: 16),
                       colorName: widget.productColors[index]["colorName"],
                       isSelected : _selectedColor == index,
                   ))

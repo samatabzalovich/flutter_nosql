@@ -13,7 +13,7 @@ import 'package:store/features/auth/sign_in/sign_in_screen.dart';
 import 'package:store/features/auth/sign_up/sign_up_screen.dart';
 import 'package:store/splash/splash_screen.dart';
 
-String uri = 'http://192.168.1.67:3000';
+String uri = 'http://192.168.1.66:3000';
 
 final Map<String, WidgetBuilder> routes = {
   HomeScreen.routeName: (context) => const HomeScreen(),
