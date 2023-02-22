@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/common/Utilities/size_config.dart';
 import 'package:store/common/constants/colors.dart';
+import 'package:store/features/home/repository/home_repository.dart';
 
-class SpecialOfferCard extends StatelessWidget {
+class SpecialOfferCard extends ConsumerWidget {
   final String? category, image, title;
   final double price;
   final GestureTapCallback onTap;
 
   const SpecialOfferCard(
       {Key? key,
-       this.category,
+      this.category,
       required this.image,
       required this.onTap,
       required this.title,
@@ -17,14 +19,16 @@ class SpecialOfferCard extends StatelessWidget {
       : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final String categoryName = (ref.read(homeRepoProvider).fetchedCategories!.firstWhere((element) => element.id == category)).title;
+
     return Padding(
         padding:
             EdgeInsets.only(left: SizeConfig.getProportionateScreenWidth(20)),
-        child: productCard());
+        child: productCard(categoryName));
   }
 
-  Widget productCard() {
+  Widget productCard(String categoryName) {
     return GestureDetector(
       onTap: onTap,
       child: SizedBox(
@@ -47,7 +51,7 @@ class SpecialOfferCard extends StatelessWidget {
                         SizedBox(
                           height: SizeConfig.getProportionateScreenHeight(150),
                         ),
-                         Text(
+                        Text(
                           title!,
                           style: const TextStyle(
                             color: Colors.black,
@@ -59,15 +63,15 @@ class SpecialOfferCard extends StatelessWidget {
                         const SizedBox(
                           height: 4,
                         ),
-                         if(category != null)
-                           Text(
-                           category!,
-                           style: const TextStyle(
-                             color:  Color(0xff858585),
-                             fontSize: 16,
-                             fontFamily: "Raleway",
-                           ),
-                         ),
+                        if (category != null)
+                          Text(
+                            categoryName!,
+                            style: const TextStyle(
+                              color: Color(0xff858585),
+                              fontSize: 16,
+                              fontFamily: "Raleway",
+                            ),
+                          ),
                         const SizedBox(
                           height: 15,
                         ),

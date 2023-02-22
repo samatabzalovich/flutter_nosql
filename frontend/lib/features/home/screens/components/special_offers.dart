@@ -52,10 +52,10 @@ class SpecialOffers extends StatelessWidget {
                                       padding: const EdgeInsets.only(right: 20),
                                       child: SpecialOfferCard(
                                           category:
-                                              state.products[index].category,
-                                          image: state.products[index].image,
-                                          price: state.products[index].price,
-                                          title: state.products[index].title,
+                                              snapshot.data![index].category[0],
+                                          image: snapshot.data![index].image,
+                                          price: snapshot.data![index].price,
+                                          title: snapshot.data![index].title,
                                           onTap: () => Navigator.pushNamed(
                                               context,
                                               ProductDetailsScreen.routeName,
