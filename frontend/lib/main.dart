@@ -49,7 +49,7 @@ class MyApp extends ConsumerWidget {
                   return SplashScreen();
                 }
                 ref.read(currentUserProvider).setUser(user, context);
-                return SplashScreen();
+                return HomeScreen();
               },
               error: (error, trace) {
                 return Center(child: Text(error.toString()));

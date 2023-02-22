@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/common/Utilities/size_config.dart';
@@ -27,9 +26,11 @@ class DrawerMenuItem extends ConsumerWidget {
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
         onTap: () async {
-          await ref.read(currentUserProvider).signOut();
-          Navigator.of(context).pushNamedAndRemoveUntil(pageUrl, (Route<dynamic> route) => false);
-          // Navigator.pushNamed(context, pageUrl);
+          // await ref.read(currentUserProvider).signOut();
+          // Navigator.of(context).pushNamedAndRemoveUntil(
+          //     pageUrl, (Route<dynamic> route) => false);
+          print(pageUrl);
+          await Navigator.pushNamed(context, pageUrl);
         },
         child: Align(
             alignment: Alignment.centerLeft,

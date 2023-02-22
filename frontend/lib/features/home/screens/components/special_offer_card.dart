@@ -20,7 +20,10 @@ class SpecialOfferCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final String categoryName = (ref.read(homeRepoProvider).fetchedCategories!.firstWhere((element) => element.id == category)).title;
+    final String categoryName = (ref
+        .read(homeRepoProvider)
+        .fetchedCategories!
+        .firstWhere((element) => element.id == category)).title;
 
     return Padding(
         padding:
@@ -99,10 +102,15 @@ class SpecialOfferCard extends ConsumerWidget {
                         color: Colors.transparent,
                         shape: BoxShape.circle,
                         boxShadow: [primaryShadow]),
-                    child: Image.asset(
-                      image!,
-                      fit: BoxFit.contain,
-                    ),
+                    child: image!.substring(0, 5) == 'https'
+                        ? Image.network(
+                            image!,
+                            fit: BoxFit.contain,
+                          )
+                        : Image.asset(
+                            image!,
+                            fit: BoxFit.contain,
+                          ),
                   )),
             ),
           ],

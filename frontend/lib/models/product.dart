@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:store/models/rating.dart';
 
 class Product {
-  final String id;
+  String? id;
   final String title;
   final String owner;
   final String description;
@@ -17,7 +17,7 @@ class Product {
   final List category;
   bool? isFavourite;
   Product({
-    required this.id,
+    this.id,
     required this.title,
     required this.owner,
     required this.description,
@@ -31,10 +31,9 @@ class Product {
     this.isFavourite = false,
   });
 
-
   // Map<String, dynamic> toMap() {
   //   final result = <String, dynamic>{};
-  
+
   //   result.addAll({'id': id});
   //   result.addAll({'title': title});
   //   result.addAll({'owner': owner});
@@ -51,7 +50,7 @@ class Product {
   //   if(isFavourite != null){
   //     result.addAll({'isFavourite': isFavourite});
   //   }
-  
+
   //   return result;
   // }
 
@@ -78,7 +77,7 @@ class Product {
 
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
-  
+
     result.addAll({'id': id});
     result.addAll({'title': title});
     result.addAll({'owner': owner});
@@ -86,16 +85,16 @@ class Product {
     result.addAll({'image': image});
     result.addAll({'images': images});
     result.addAll({'colors': colors});
-    if(rating != null){
+    if (rating != null) {
       result.addAll({'rating': rating!.map((x) => x?.toMap()).toList()});
     }
     result.addAll({'quantity': quantity});
     result.addAll({'price': price});
     result.addAll({'category': category});
-    if(isFavourite != null){
+    if (isFavourite != null) {
       result.addAll({'isFavourite': isFavourite});
     }
-  
+
     return result;
   }
 
@@ -108,7 +107,9 @@ class Product {
       image: map['image'] ?? '',
       images: List<String>.from(map['images']),
       colors: List<Map<String, dynamic>>.from(map['colors']),
-      rating: map['rating'] != null ? List<Rating>.from(map['rating']?.map((x) => Rating.fromMap(x))) : null,
+      rating: map['rating'] != null
+          ? List<Rating>.from(map['rating']?.map((x) => Rating.fromMap(x)))
+          : null,
       quantity: map['quantity']?.toInt() ?? 0,
       price: map['price']?.toDouble() ?? 0.0,
       category: List.from(map['category']),
@@ -118,7 +119,8 @@ class Product {
 
   String toJson() => json.encode(toMap());
 
-  factory Product.fromJson(String source) => Product.fromMap(json.decode(source));
+  factory Product.fromJson(String source) =>
+      Product.fromMap(json.decode(source));
 }
 // class Product {
 //   final String id;

@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:store/common/constants/text_style.dart';
 import 'package:store/features/home/repository/home_repository.dart';
 import 'package:store/features/home/screens/components/popular_product.dart';
+import 'package:store/features/home/screens/search/search_page.dart';
 import 'package:store/features/widgets/custom_bottom_navbar.dart';
 
 import '../../../common/constants/colors.dart';
 import '../../../common/constants/enums.dart';
+import '../../../common/constants/form_field_styles.dart';
 import '../../../models/category.dart';
+import '../../../models/product.dart';
+import '../product_details/product_details_screen.dart';
 import 'components/categories.dart';
 import '../../widgets/search_field.dart';
+import 'components/special_offer_card.dart';
 import 'components/special_offers.dart';
 import 'components/text_banner.dart';
 
@@ -87,13 +93,24 @@ class _HomeContentState extends ConsumerState<HomeContent> {
                     ),
                     Expanded(
                       // take the remaining space of the row
-                      child: SearchField(),
+                      child: TextField(
+                          readOnly: true,
+                          showCursor: true,
+                          // To prevent open the keyboard
+                          maxLines: 1,
+                          style: kSearchFieldTextStyle,
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, SearchPage.searchRoute);
+                          },
+                          decoration: searchFieldInputDecoration),
                     )
                   ],
                 ),
               ),
               // Banner component
               const TextBanner(),
+
               // Categories component
               FutureBuilder(
                   future: ref
@@ -112,13 +129,11 @@ class _HomeContentState extends ConsumerState<HomeContent> {
                         ),
                         SpecialOffers(),
                         PopularProducts(),
-
                       ],
                     );
                   }),
               // Special Offers component
               // Popular products component
-
               const CustomButtomNavBar(selectedMenu: MenuState.home),
             ],
           );

@@ -32,6 +32,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "carousel_slider",
+      "rootUri": "file:///C:/Flutter%20Env/Flutter%20SDK/flutter/.pub-cache/hosted/pub.dartlang.org/carousel_slider-4.2.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "characters",
       "rootUri": "file:///C:/Flutter%20Env/Flutter%20SDK/flutter/.pub-cache/hosted/pub.dartlang.org/characters-1.2.1",
       "packageUri": "lib/",
@@ -60,6 +66,12 @@
       "rootUri": "file:///C:/Flutter%20Env/Flutter%20SDK/flutter/.pub-cache/hosted/pub.dartlang.org/cloud_firestore_web-3.2.1",
       "packageUri": "lib/",
       "languageVersion": "2.16"
+    },
+    {
+      "name": "cloudinary_public",
+      "rootUri": "file:///C:/Flutter%20Env/Flutter%20SDK/flutter/.pub-cache/hosted/pub.dartlang.org/cloudinary_public-0.20.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
     },
     {
       "name": "collection",
@@ -122,6 +134,18 @@
       "languageVersion": "2.15"
     },
     {
+      "name": "dio",
+      "rootUri": "file:///C:/Flutter%20Env/Flutter%20SDK/flutter/.pub-cache/hosted/pub.dartlang.org/dio-4.0.6",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "dotted_border",
+      "rootUri": "file:///C:/Flutter%20Env/Flutter%20SDK/flutter/.pub-cache/hosted/pub.dartlang.org/dotted_border-2.0.0+3",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "equatable",
       "rootUri": "file:///C:/Flutter%20Env/Flutter%20SDK/flutter/.pub-cache/hosted/pub.dartlang.org/equatable-2.0.5",
       "packageUri": "lib/",
@@ -144,6 +168,12 @@
       "rootUri": "file:///C:/Flutter%20Env/Flutter%20SDK/flutter/.pub-cache/hosted/pub.dartlang.org/file-6.1.4",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "file_picker",
+      "rootUri": "file:///C:/Flutter%20Env/Flutter%20SDK/flutter/.pub-cache/hosted/pub.dartlang.org/file_picker-5.2.5",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
     },
     {
       "name": "firebase_auth",
@@ -212,10 +242,22 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "flutter_colorpicker",
+      "rootUri": "file:///C:/Flutter%20Env/Flutter%20SDK/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_colorpicker-1.0.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "flutter_lints",
       "rootUri": "file:///C:/Flutter%20Env/Flutter%20SDK/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_lints-2.0.1",
       "packageUri": "lib/",
       "languageVersion": "2.17"
+    },
+    {
+      "name": "flutter_plugin_android_lifecycle",
+      "rootUri": "file:///C:/Flutter%20Env/Flutter%20SDK/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_plugin_android_lifecycle-2.0.7",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
     },
     {
       "name": "flutter_riverpod",
@@ -542,7 +584,7 @@
       "languageVersion": "2.17"
     }
   ],
-  "generated": "2023-02-02T18:42:18.847574Z",
+  "generated": "2023-02-22T18:33:10.982448Z",
   "generator": "pub",
   "generatorVersion": "2.18.5"
 }

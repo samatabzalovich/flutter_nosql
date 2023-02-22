@@ -1,2 +1,3 @@
-enum MenuState { home, favourite, profile, cart }
-enum PaymentMethod { visa, master, bank } 
+enum MenuState { home, favourite, profile, cart, filter, category }
+
+enum PaymentMethod { visa, master, bank }
