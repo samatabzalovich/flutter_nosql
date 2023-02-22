@@ -87,7 +87,7 @@ class Product {
     result.addAll({'images': images});
     result.addAll({'colors': colors});
     if(ratings != null){
-      result.addAll({'ratings': ratings!.map((x) => x?.toMap()).toList()});
+      result.addAll({'ratings': ratings!.map((x) => x.toMap()).toList()});
     }
     result.addAll({'quantity': quantity});
     result.addAll({'price': price});
