@@ -69,7 +69,7 @@ class SpecialOffers extends ConsumerWidget {
                                       padding: const EdgeInsets.only(right: 20),
                                       child: SpecialOfferCard(
                                           category: snapshot
-                                              .data![index].category[index],
+                                              .data![index].category[0],
                                           image: snapshot.data![index].image,
                                           price: snapshot.data![index].price,
                                           title: snapshot.data![index].title,
