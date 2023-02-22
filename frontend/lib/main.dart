@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:store/features/auth/repository/auth_repository.dart';
 import 'package:store/features/bloc/current_user/current_user.dart';
-import 'package:store/features/bloc/favorite/favorite_bloc.dart';
 import 'package:store/features/bloc/order/order_bloc.dart';
 import 'package:store/features/home/screens/home_screen.dart';
 import 'package:store/splash/splash_screen.dart';
@@ -28,14 +27,11 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<FavoriteBloc>(
-          create: (_) => FavoriteBloc(),
-        ),
+        // BlocProvider<FavoriteBloc>(
+        //   create: (_) => FavoriteBloc(),
+        // ),
         BlocProvider<SearchBloc>(
           create: (_) => SearchBloc(),
-        ),
-        BlocProvider<OrderBloc>(
-          create: (_) => OrderBloc(),
         ),
       ],
       child: MaterialApp(

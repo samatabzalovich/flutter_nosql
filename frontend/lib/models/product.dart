@@ -11,7 +11,7 @@ class Product {
   final String image;
   final List<String> images;
   final List<Map<String, dynamic>> colors;
-  final List<Rating>? rating;
+  final List<Rating>? ratings;
   final int quantity;
   final double price;
   final List category;
@@ -24,7 +24,7 @@ class Product {
     required this.image,
     required this.images,
     required this.colors,
-    this.rating,
+    this.ratings,
     required this.quantity,
     required this.price,
     required this.category,
@@ -78,15 +78,15 @@ class Product {
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
 
-    result.addAll({'id': id});
+    result.addAll({'_id': id});
     result.addAll({'title': title});
     result.addAll({'owner': owner});
     result.addAll({'description': description});
     result.addAll({'image': image});
     result.addAll({'images': images});
     result.addAll({'colors': colors});
-    if (rating != null) {
-      result.addAll({'rating': rating!.map((x) => x?.toMap()).toList()});
+    if (ratings != null) {
+      result.addAll({'ratings': ratings!.map((x) => x.toMap()).toList()});
     }
     result.addAll({'quantity': quantity});
     result.addAll({'price': price});
@@ -107,8 +107,8 @@ class Product {
       image: map['image'] ?? '',
       images: List<String>.from(map['images']),
       colors: List<Map<String, dynamic>>.from(map['colors']),
-      rating: map['rating'] != null
-          ? List<Rating>.from(map['rating']?.map((x) => Rating.fromMap(x)))
+      ratings: map['ratings'] != null
+          ? List<Rating>.from(map['ratings']?.map((x) => Rating.fromMap(x)))
           : null,
       quantity: map['quantity']?.toInt() ?? 0,
       price: map['price']?.toDouble() ?? 0.0,

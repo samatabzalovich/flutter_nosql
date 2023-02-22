@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:store/models/product.dart';
 import 'package:store/common/Utilities/size_config.dart';
 import 'package:store/common/constants/colors.dart';
@@ -63,6 +64,35 @@ class ProductDescription extends StatelessWidget {
                       style: productDescriptionStyle,
                     ),
                   ),
+                  Builder(builder: (context) {
+                            double initialRating = 0.0;
+                            if (product.ratings != null) {
+                              if (product.ratings!.isNotEmpty) {
+                                double temp = 0;
+                                product.ratings!.forEach((element) {
+                                  temp = element.rating;
+                                });
+                                initialRating =
+                                    temp / product.ratings!.length;
+                              }
+                            }
+                            return Row(
+                              children: [
+                                Text("Rating: $initialRating"),
+                                SizedBox(width: 15,),
+                                RatingBarIndicator(
+                                  rating: initialRating,
+                                  itemBuilder: (context, index) => Icon(
+                                    Icons.star,
+                                    color: Colors.amber,
+                                  ),
+                                  itemCount: 5,
+                                  itemSize: 30.0,
+                                  direction: Axis.horizontal,
+                                ),
+                              ],
+                            );
+                          }),
                   // See more details button
                   Padding(
                     padding: EdgeInsets.symmetric(

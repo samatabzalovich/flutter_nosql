@@ -68,7 +68,7 @@ class SpecialOfferCard extends ConsumerWidget {
                         ),
                         if (category != null)
                           Text(
-                            categoryName!,
+                            categoryName,
                             style: const TextStyle(
                               color: Color(0xff858585),
                               fontSize: 16,

@@ -10,15 +10,20 @@ import 'package:store/common/constants/colors.dart';
 // import 'package:store/features/bloc/cart/cart_event.dart';
 import 'icon_button.dart';
 
-class CartItemCard extends ConsumerWidget {
-  final CartItem cartItem;
+class CartItemCard extends ConsumerStatefulWidget {
+  CartItem cartItem;
   final int itemIndex;
-  const CartItemCard(
+  CartItemCard(
       {Key? key, required this.cartItem, required this.itemIndex})
       : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CartItemCard> createState() => _CartItemCardState();
+}
+
+class _CartItemCardState extends ConsumerState<CartItemCard> {
+  @override
+  Widget build(BuildContext context) {
     // final bloc = BlocProvider.of<CartBloc>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -37,7 +42,7 @@ class CartItemCard extends ConsumerWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: Image.asset(cartItem.product.image),
+              child: Image.asset(widget.cartItem.product.image),
             ),
           ),
         ),
@@ -47,7 +52,7 @@ class CartItemCard extends ConsumerWidget {
             height: 10,
           ),
           Text(
-            cartItem.product.title,
+            widget.cartItem.product.title,
             style: const TextStyle(color: Colors.black, fontSize: 16),
             maxLines: 2,
           ),
@@ -55,7 +60,7 @@ class CartItemCard extends ConsumerWidget {
             height: 10,
           ),
           Text(
-            "\$${cartItem.product.price}",
+            "\$${widget.cartItem.product.price}",
             style: const TextStyle(
               fontWeight: FontWeight.w600,
               color: primaryColor,
@@ -83,13 +88,20 @@ class CartItemCard extends ConsumerWidget {
                   size: 10,
                   color: Colors.white,
                 ),
-                onTap: () {},
+                onTap: () {
+                  setState(() {
+                    ref
+                        .read(cartProvider)
+                        .removeFromCart(widget.cartItem, context);
+                    widget.cartItem.quantity--;
+                  });
+                },
                 backgroundColor: const Color(0xff7ccbeb),
               ),
               const SizedBox(
                 width: 8,
               ),
-              Text("${cartItem.quantity}"),
+              Text("${widget.cartItem.quantity}"),
               const SizedBox(
                 width: 8,
               ),
@@ -100,7 +112,15 @@ class CartItemCard extends ConsumerWidget {
                   color: Colors.white,
                 ),
                 backgroundColor: const Color(0xff7ccbeb),
-                onTap: () {},
+                onTap: () {
+                  setState(() {
+                    ref
+                        .read(cartProvider)
+                        .addProductToCard(widget.cartItem, context);
+                    widget.cartItem.quantity++;
+                      
+                  });
+                },
               )
             ],
           ),
@@ -110,7 +130,9 @@ class CartItemCard extends ConsumerWidget {
         ),
         IconButton(
           onPressed: () {
-            ref.read(cartProvider).removeFromCart(cartItem, context);
+            setState(() {
+              ref.read(cartProvider).removeFromCart(widget.cartItem, context);
+            });
           },
           icon: const Icon(
             Icons.close,

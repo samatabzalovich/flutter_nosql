@@ -70,7 +70,7 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                               ),
                             )
                             .toList()),
-                    if (user.type == 'seller')
+                    if (user!.type == 'seller')
                       Column(
                         children: drawerAddProductItems
                             .map(

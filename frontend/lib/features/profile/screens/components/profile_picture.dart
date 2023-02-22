@@ -9,7 +9,7 @@ class ProfilePicture extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    UserModel user = ref.watch(currentUserProvider).currentUser;
+    UserModel user = ref.watch(currentUserProvider).currentUser!;
     return SizedBox(
       height: SizeConfig.getProportionateScreenHeight(150),
       child: Stack(

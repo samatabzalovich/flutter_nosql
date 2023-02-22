@@ -39,7 +39,7 @@ class HomeRepository extends ChangeNotifier {
     required userId,
     required BuildContext context,
   }) async {
-    final UserModel currentUser = ref.read(currentUserProvider).currentUser;
+    final UserModel currentUser = ref.read(currentUserProvider).currentUser!;
     try {
       http.Response res = await http.post(
         Uri.parse(
@@ -76,7 +76,7 @@ class HomeRepository extends ChangeNotifier {
     required List<Map<String, dynamic>> colors,
     List<String>? imageUrls,
   }) async {
-    final UserModel currentUser = ref.read(currentUserProvider).currentUser;
+    final UserModel currentUser = ref.read(currentUserProvider).currentUser!;
     try {
       final cloudinary = CloudinaryPublic('ds9zqpfo7', 'rsjeh28c');
       List<String> cloudImageUrl = [];
@@ -135,7 +135,7 @@ class HomeRepository extends ChangeNotifier {
     required List<File> images,
     required List<Map<String, dynamic>> colors,
   }) async {
-    final UserModel currentUser = ref.read(currentUserProvider).currentUser;
+    final UserModel currentUser = ref.read(currentUserProvider).currentUser!;
 
     try {
       final cloudinary = CloudinaryPublic('ds9zqpfo7', 'rsjeh28c');
@@ -186,7 +186,7 @@ class HomeRepository extends ChangeNotifier {
     int? maxPrice,
   }) async {
     // final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final UserModel userProvider = ref.read(currentUserProvider).currentUser;
+    final UserModel userProvider = ref.read(currentUserProvider).currentUser!;
     List<Product> productList = [];
     try {
       http.Response res = await http.get(
@@ -222,7 +222,7 @@ class HomeRepository extends ChangeNotifier {
     required String categoryId,
   }) async {
     // final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final UserModel userProvider = ref.read(currentUserProvider).currentUser;
+    final UserModel userProvider = ref.read(currentUserProvider).currentUser!;
     List<Product> productList = [];
     try {
       http.Response res = await http.get(
@@ -250,11 +250,72 @@ class HomeRepository extends ChangeNotifier {
     return productList;
   }
 
+  Future<bool> addToFavourites(String productId, BuildContext context) async {
+    final UserModel userProvider = ref.read(currentUserProvider).currentUser!;
+    List<String> favourites = [];
+    try {
+      http.Response res = await http.post(
+        Uri.parse('$uri/api/favourites'),
+        body: jsonEncode({"id": productId}),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'x-auth-token': userProvider.token!,
+        },
+      );
+
+      httpErrorHandle(
+        response: res,
+        context: context,
+        onSuccess: () {
+          UserModel user = ref
+              .read(currentUserProvider)
+              .currentUser!
+              .copyWith(favourites: jsonDecode(res.body));
+          ref.read(currentUserProvider).setUser(user, context);
+        },
+      );
+
+      return true;
+    } catch (e) {
+      showSnackBar(context: context, content: e.toString());
+    }
+    return false;
+  }
+
+  Future<Product?> fetchProductById({
+    required BuildContext context,
+    required String productId,
+  }) async {
+    // final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final UserModel userProvider = ref.read(currentUserProvider).currentUser!;
+    Product? product;
+    try {
+      http.Response res = await http.get(
+        Uri.parse('$uri/api/products-by-id/$productId'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'x-auth-token': userProvider.token!,
+        },
+      );
+
+      httpErrorHandle(
+        response: res,
+        context: context,
+        onSuccess: () {
+          product = Product.fromJson(res.body);
+        },
+      );
+    } catch (e) {
+      showSnackBar(context: context, content: e.toString());
+    }
+    return product;
+  }
+
   Future<List<Category>> fetchCategories({
     required BuildContext context,
   }) async {
     // final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final UserModel userProvider = ref.read(currentUserProvider).currentUser;
+    final UserModel userProvider = ref.read(currentUserProvider).currentUser!;
     List<Category> categories = [];
     try {
       http.Response res = await http.get(
@@ -283,11 +344,36 @@ class HomeRepository extends ChangeNotifier {
     return categories;
   }
 
+  Future<Product?> rateProduct(
+      String id, double rating, BuildContext context) async {
+    Product? temp;
+    try {
+      final url = Uri.parse('$uri/api/rate-product');
+      final UserModel userProvider = ref.read(currentUserProvider).currentUser!;
+      final response = await http.post(url,
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            'x-auth-token': userProvider.token!,
+          },
+          body: json.encode({'id': id, 'rating': rating}));
+      httpErrorHandle(
+        response: response,
+        context: context,
+        onSuccess: () {
+          temp = Product.fromJson(response.body);
+        },
+      );
+    } catch (e) {
+      showSnackBar(context: context, content: e.toString());
+    }
+    return temp;
+  }
+
   Future<List<Product>> fetchPopularProducts({
     required BuildContext context,
   }) async {
     // final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final UserModel userProvider = ref.read(currentUserProvider).currentUser;
+    final UserModel userProvider = ref.read(currentUserProvider).currentUser!;
     List<Product> productList = [];
     try {
       http.Response res = await http.get(

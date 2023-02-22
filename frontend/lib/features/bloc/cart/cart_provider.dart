@@ -21,7 +21,7 @@ class Cart extends ChangeNotifier {
     required this.ref,
   });
   Future<List<CartItem>> get cartItems async {
-    UserModel currentUserData = ref.read(currentUserProvider).currentUser;
+    UserModel currentUserData = ref.read(currentUserProvider).currentUser!;
     Map<String, String> map = {"id": currentUserData.id!};
     http.Response res = await http.post(
       Uri.parse('$uri/tokenIsValid'),
@@ -36,9 +36,9 @@ class Cart extends ChangeNotifier {
     return _cartItems;
   }
 
-  void addProductToCard(CartItem cartItem, BuildContext context) async {
+  Future<void> addProductToCard(CartItem cartItem, BuildContext context) async {
     _cartItems.add(cartItem);
-    UserModel currentUserData = ref.read(currentUserProvider).currentUser;
+    UserModel currentUserData = ref.read(currentUserProvider).currentUser!;
     Map<String, dynamic> map = {
       "id": cartItem.product.id,
       "quantity": cartItem.quantity
@@ -56,7 +56,7 @@ class Cart extends ChangeNotifier {
         UserModel resultModel = UserModel.fromJson(res.body);
         UserModel user = ref
             .read(currentUserProvider)
-            .currentUser
+            .currentUser!
             .copyWith(cart: resultModel.cart);
         ref.read(currentUserProvider).setUser(user, context);
       },
@@ -66,7 +66,7 @@ class Cart extends ChangeNotifier {
 
   void removeFromCart(CartItem cartItem, BuildContext context) async {
     _cartItems.remove(cartItem);
-    UserModel currentUserData = ref.read(currentUserProvider).currentUser;
+    UserModel currentUserData = ref.read(currentUserProvider).currentUser!;
     // Map<String, String> map = {
     //   "id": currentUserData.id!,
     //   "cartItem": cartItem.toJson()
@@ -86,7 +86,7 @@ class Cart extends ChangeNotifier {
         UserModel resultModel = UserModel.fromJson(res.body);
         UserModel user = ref
             .read(currentUserProvider)
-            .currentUser
+            .currentUser!
             .copyWith(cart: resultModel.cart);
         ref.read(currentUserProvider).setUser(user, context);
         showSnackBar(context: context, content: 'Product removed from cart');
@@ -97,9 +97,9 @@ class Cart extends ChangeNotifier {
 
   void removeProductsFromCart(BuildContext context) async {
     _cartItems.clear();
-    UserModel currentUserData = ref.read(currentUserProvider).currentUser;
-    http.Response res = await http.post(
-      Uri.parse('$uri//api/remove-products-from-cart/'),
+    UserModel currentUserData = ref.read(currentUserProvider).currentUser!;
+    http.Response res = await http.delete(
+      Uri.parse('$uri/api/remove-products-from-cart/'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'x-auth-token': currentUserData.token!
@@ -109,10 +109,12 @@ class Cart extends ChangeNotifier {
       response: res,
       context: context,
       onSuccess: () {
-        UserModel user = ref
-            .read(currentUserProvider)
-            .currentUser
-            .copyWith(cart: json.decode(res.body)['cart']);
+        List<CartItem> temp = [];
+        for (var i = 0; i < json.decode(res.body)['cart'].length; i++) {
+          temp.add(CartItem.fromMap(json.decode(res.body)['cart'][i]));
+        }
+        UserModel user =
+            ref.read(currentUserProvider).currentUser!.copyWith(cart: temp);
         ref.read(currentUserProvider).setUser(user, context);
         showSnackBar(
             context: context, content: 'All products removed from cart');

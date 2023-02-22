@@ -13,7 +13,7 @@ bool httpErrorHandle({
       onSuccess();
       return true;
     case 400:
-      showSnackBar(context: context, content: jsonDecode(response.body));
+      showSnackBar(context: context, content: response.body);
       return false;
     case 500:
       showSnackBar(context: context, content: jsonDecode(response.body));

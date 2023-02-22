@@ -26,11 +26,12 @@ class DrawerMenuItem extends ConsumerWidget {
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
         onTap: () async {
-          // await ref.read(currentUserProvider).signOut();
-          // Navigator.of(context).pushNamedAndRemoveUntil(
-          //     pageUrl, (Route<dynamic> route) => false);
-          print(pageUrl);
-          await Navigator.pushNamed(context, pageUrl);
+          if (pageUrl == "/signIn") {
+            await ref.read(currentUserProvider).signOut();
+            Navigator.of(context).pushNamedAndRemoveUntil(
+                pageUrl, (Route<dynamic> route) => false);
+          }
+          Navigator.pushNamed(context, pageUrl);
         },
         child: Align(
             alignment: Alignment.centerLeft,

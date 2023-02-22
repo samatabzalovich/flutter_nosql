@@ -4,6 +4,8 @@ import 'package:path/path.dart';
 import 'package:store/common/Utilities/size_config.dart';
 import 'package:store/features/bloc/current_user/current_user.dart';
 import 'package:store/features/edit_product/screens/edit_product_screen.dart';
+import 'package:store/common/Utilities/size_config.dart';
+import 'package:store/features/bloc/current_user/current_user.dart';
 import 'package:store/features/home/repository/home_repository.dart';
 import 'package:store/models/product.dart';
 import 'package:store/models/user.dart';
@@ -29,7 +31,16 @@ class _CustomAppBarState extends ConsumerState<CustomAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    UserModel currentUser = ref.read(currentUserProvider).currentUser;
+    List? found = ref.read(currentUserProvider).currentUser!.favourites;
+    UserModel currentUser = ref.read(currentUserProvider).currentUser!;
+    widget.isProductFavourite = false;
+    if (found != null && found.isNotEmpty) {
+      for (var element in found) {
+        if (element == widget.productId) {
+          widget.isProductFavourite = true;
+        }
+      }
+    }
     return SafeArea(
       child: Column(
         children: [
@@ -98,15 +109,11 @@ class _CustomAppBarState extends ConsumerState<CustomAppBar> {
               ),
             ),
           InkWell(
-            onTap: () {
-              // demoProducts
-              //     .where((product) => (product.id == widget.productId))
-              //     .first.isFavourite = !widget.isProductFavourite;
-              setState(() {
-                // widget.isProductFavourite = demoProducts
-                //     .where((product) => (product.id == widget.productId))
-                //     .first.isFavourite;
-              });
+            onTap: () async {
+              bool ok = await ref
+                  .read(homeRepoProvider)
+                  .addToFavourites(widget.productId, context);
+              setState(() {});
             },
             child: Icon(
               widget.isProductFavourite == true &&

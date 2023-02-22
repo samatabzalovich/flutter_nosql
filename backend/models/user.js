@@ -53,6 +53,7 @@ const userSchema = mongoose.Schema({
       },
     },
   ],
+  favourites: [{type: mongoose.Types.ObjectId, ref: "products"}]
 });
 
 const User = mongoose.model("User", userSchema);
