@@ -19,7 +19,7 @@ bool httpErrorHandle({
       showSnackBar(context: context, content: jsonDecode(response.body));
       return false;
     default:
-      showSnackBar(context: context, content: jsonDecode(response.body));
+      showSnackBar(context: context, content: 'Unexpected error');
       return false;
   }
 }

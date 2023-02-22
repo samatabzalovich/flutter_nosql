@@ -1,47 +1,49 @@
+import 'dart:convert';
 
-class Category{
-  late final int id;
-  late final String name;
-  late final String image;
-  late final bool isSelected;
+class Category {
+  final String id;
+  final String title;
+  final String image;
+  Category({
+    required this.id,
+    required this.title,
+    required this.image,
+  });
 
-  Category({required this.id,required this.name,this.isSelected = false,required this.image});
+  Map<String, dynamic> toMap() {
+    final result = <String, dynamic>{};
 
-  Map<String, dynamic> toMap()
-  {
-    return {
-      'id' :id,
-      'name' : name,
-      'image': image,
-      'isSelected': isSelected
-    };
-  }
-  Category.fromMap(dynamic map){
-    id = map['id'];
-    name = map['name'];
-    image = map['image'];
-    isSelected = map['isSelected'];
+    result.addAll({'id': id});
+    result.addAll({'title': title});
+    result.addAll({'image': image});
+
+    return result;
   }
 
-  Category toEntity() => Category(
-      id: id,
-      name: name,
-    image: image,
-    isSelected: isSelected
-  );
+  factory Category.fromMap(Map<String, dynamic> map) {
+    Category temp = Category(
+      id: map['_id'] ?? '',
+      title: map['title'] ?? '',
+      image: map['image'] ?? '',
+    );
+    return temp;
+  }
 
+  String toJson() => json.encode(toMap());
 
+  factory Category.fromJson(String source) =>
+      Category.fromMap(jsonDecode(source));
 }
 
 
-List<Map<String, dynamic>> categories = [
-  {"title": "Wearable"},
-  {"title": "Laptop"},
-  {"title": "Phones"},
-  {"title": "Clock"},
-  {"title": "Smartphone"},
-  {"title": "Fashion"},
-  {"title": "Computers"},
-  {"title": "Shoes"},
-  {"title": "Drones"},
-];
+// List<Map<String, dynamic>> categoriess = [
+//   {"title": "Wearable"},
+//   {"title": "Laptop"},
+//   {"title": "Phones"},
+//   {"title": "Clock"},
+//   {"title": "Smartphone"},
+//   {"title": "Fashion"},
+//   {"title": "Computers"},
+//   {"title": "Shoes"},
+//   {"title": "Drones"},
+// ];

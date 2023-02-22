@@ -7,7 +7,7 @@ const User = require("../models/user");
 
 userRouter.post("/api/add-to-cart", auth, async (req, res) => {
   try {
-    const { id } = req.body;
+    const { id, quantity } = req.body;
     const product = await Product.findById(id);
     let user = await User.findById(req.user);
 
@@ -25,7 +25,7 @@ userRouter.post("/api/add-to-cart", auth, async (req, res) => {
         let producttt = user.cart.find((productt) =>
           productt.product._id.equals(product._id)
         );
-        producttt.quantity += 1;
+        producttt.quantity += quantity;
       } else {
         user.cart.push({ product, quantity: 1 });
       }
@@ -52,6 +52,17 @@ userRouter.delete("/api/remove-from-cart/:id", auth, async (req, res) => {
         }
       }
     }
+    user = await user.save();
+    res.json(user);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+userRouter.delete("/api/remove-products-from-cart/", auth, async (req, res) => {
+  try {
+    let user = await User.findById(req.user);
+
+    user.cart = [];
     user = await user.save();
     res.json(user);
   } catch (e) {

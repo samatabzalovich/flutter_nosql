@@ -14,14 +14,15 @@ class CurrentUserData extends ChangeNotifier {
     return _currentUser != null;
   }
 
+  UserModel get currentUser {
+    return _currentUser!;
+  }
+
   void setUser(UserModel user, BuildContext context) async {
     _currentUser = user;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = user.token!;
     bool res = await prefs.setString('x-auth-token', token);
-    if (res) {
-      showSnackBar(context: context, content: 'User is saved');
-    }
     notifyListeners();
   }
 

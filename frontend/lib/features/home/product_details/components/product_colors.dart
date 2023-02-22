@@ -5,7 +5,7 @@ import 'package:store/common/Utilities/size_config.dart';
 import 'package:store/common/constants/text_style.dart';
 
 class ProductColorList extends StatefulWidget {
-  final List<Map<String,dynamic>> productColors;
+  final List<dynamic> productColors;
   const ProductColorList({Key? key, required this.productColors}) : super(key: key);
 
   @override
@@ -37,7 +37,7 @@ class _ProductColorListState extends State<ProductColorList> {
               ...List.generate(widget.productColors.length,
                       (index) =>  productColorCard(
                       colorIndex : index,
-                      productColor: widget.productColors[index]["color"],
+                      productColor: int.parse(widget.productColors[index]["color"].substring(2), radix: 16),
                       colorName: widget.productColors[index]["colorName"],
                       isSelected : _selectedColor == index,
                   ))
@@ -48,7 +48,7 @@ class _ProductColorListState extends State<ProductColorList> {
       ),
     );
   }
-  GestureDetector productColorCard({required int colorIndex ,required Color productColor,required bool isSelected,required String colorName}){
+  GestureDetector productColorCard({required int colorIndex ,required int productColor,required bool isSelected,required String colorName}){
     return GestureDetector(
       onTap: (){
         setState(() {
@@ -62,7 +62,7 @@ class _ProductColorListState extends State<ProductColorList> {
         width: SizeConfig.getProportionateScreenWidth(105),
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(color: isSelected ? productColor : Colors.black12),
+          border: Border.all(color: isSelected ? Color(productColor) : Colors.black12),
           boxShadow: const [
             BoxShadow(
             color: Color(0x0f000000),
@@ -80,7 +80,7 @@ class _ProductColorListState extends State<ProductColorList> {
             Circle(
               width: SizeConfig.getProportionateScreenWidth(20),
               height: SizeConfig.getProportionateScreenHeight(20),
-              color: productColor,
+              color: Color(productColor),
               borderColor: Colors.transparent,
             ),
              const SizedBox(width:8,),
