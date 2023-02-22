@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:store/common/Utilities/keyboard_util.dart';
 import 'package:store/common/Utilities/sqfilte_helper.dart';
 import 'package:store/common/constants/colors.dart';
 import 'package:store/common/constants/form_messages.dart';
 import 'package:store/features/auth/forgot_password/forgot_password_screen.dart';
+import 'package:store/features/auth/repository/auth_repository.dart';
 import 'package:store/features/home/screens/home_screen.dart';
 import 'package:store/features/auth/sign_up/sign_up_screen.dart';
 import 'package:store/features/widgets/custom_button.dart';
 import 'package:store/features/widgets/custom_page_transition.dart';
 
-class SignInForm extends StatefulWidget {
+class SignInForm extends ConsumerStatefulWidget {
   const SignInForm({Key? key}) : super(key: key);
 
   @override
-  State<SignInForm> createState() => _SignInFormState();
+  ConsumerState<SignInForm> createState() => _SignInFormState();
 }
 
-class _SignInFormState extends State<SignInForm> {
-  final SqliteDbHelper _sqliteDbHelper = SqliteDbHelper();
+class _SignInFormState extends ConsumerState<SignInForm> {
   final _formKey = GlobalKey<FormState>();
   final _phoneNumberFormFieldKey = GlobalKey<FormFieldState>();
   final _passwordFormFieldKey = GlobalKey<FormFieldState>();
@@ -95,14 +96,21 @@ class _SignInFormState extends State<SignInForm> {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
                       // Check user Identity
-                      bool result = true; //qwfwqwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+
+                      bool result = await ref
+                          .read(authRepositoryProvider)
+                          .signInUser(
+                              context: context,
+                              phoneNumber: _mobileFormatter.getUnmaskedText(),
+                              password:
+                                  password!); //qwfwqwwwwwwwwwwwwwwwwwwwwwwwwwwwww
                       if (result) {
                         KeyboardUtil.hideKeyboard(context);
-                        Navigator.push(
-                            context,
-                            CustomScaleTransition(
-                                nextPageUrl: HomeScreen.routeName,
-                                nextPage: const HomeScreen()));
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          HomeScreen.routeName,
+                          (route) => false,
+                        );
                       } else {
                         ScaffoldMessenger.of(context)
                             .showSnackBar(const SnackBar(

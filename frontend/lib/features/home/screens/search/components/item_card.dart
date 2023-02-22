@@ -83,10 +83,13 @@ class ItemCard extends StatelessWidget {
                           color: Colors.transparent,
                           shape: BoxShape.circle,
                           boxShadow: [primaryShadow]),
-                      child: Image.asset(
-                        image!,
-                        fit: BoxFit.contain,
-                      ),
+                      child: image!.startsWith("asset") ? Image.asset(
+                      image!,
+                      fit: BoxFit.contain,
+                    ) : Image.network(
+                      image!,
+                      fit: BoxFit.contain,
+                    ),
                     )),
               ),
             ],

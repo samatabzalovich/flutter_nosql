@@ -1,0 +1,455 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:cloudinary_public/cloudinary_public.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
+import 'package:store/features/bloc/current_user/current_user.dart';
+import 'package:store/features/home/screens/home_screen.dart';
+import 'package:store/models/category.dart';
+import 'package:store/models/product.dart';
+
+import '../../../common/Utilities/error_handler.dart';
+import '../../../common/constants/routes.dart';
+import '../../../models/user.dart';
+
+final homeRepoProvider = ChangeNotifierProvider((ref) {
+  return HomeRepository(ref: ref);
+});
+
+class HomeRepository extends ChangeNotifier {
+  final ChangeNotifierProviderRef ref;
+  Category? _selectedCategory;
+  List<Category> _fetchedCategories = [];
+  HomeRepository({
+    required this.ref,
+  });
+
+  Category? get selectedCategory => _selectedCategory;
+  List<Category>? get fetchedCategories => _fetchedCategories;
+  void changeSelectedCategory(Category category) {
+    _selectedCategory = category;
+    notifyListeners();
+  }
+
+  deleteProduct({
+    required id,
+    required ownerId,
+    required userId,
+    required BuildContext context,
+  }) async {
+    final UserModel currentUser = ref.read(currentUserProvider).currentUser!;
+    try {
+      http.Response res = await http.post(
+        Uri.parse(
+            '$uri/seller/delete-product?id=$id&ownerId=$ownerId&userId=$userId'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'x-auth-token': currentUser.token!,
+        },
+      );
+
+      httpErrorHandle(
+          response: res,
+          context: context,
+          onSuccess: () {
+            showSnackBar(
+                context: context, content: 'Product Deleted Successfully!');
+            Navigator.pushNamed(context, HomeScreen.routeName);
+          });
+    } catch (e) {
+      print(e.toString());
+      showSnackBar(context: context, content: e.toString());
+    }
+  }
+
+  updateProduct({
+    required id,
+    required BuildContext context,
+    required String name,
+    required String description,
+    required double price,
+    required int quantity,
+    required String category,
+    required List<File> images,
+    required List<Map<String, dynamic>> colors,
+    List<String>? imageUrls,
+  }) async {
+    final UserModel currentUser = ref.read(currentUserProvider).currentUser!;
+    try {
+      final cloudinary = CloudinaryPublic('ds9zqpfo7', 'rsjeh28c');
+      List<String> cloudImageUrl = [];
+      if (images.isNotEmpty) {
+        for (int i = 0; i < images.length; i++) {
+          CloudinaryResponse res = await cloudinary.uploadFile(
+              CloudinaryFile.fromFile(images[i].path,
+                  resourceType: CloudinaryResourceType.Image, folder: name));
+          cloudImageUrl.add(res.secureUrl);
+        }
+      } else {
+        cloudImageUrl = imageUrls!;
+      }
+
+      Product product = Product(
+          id: id,
+          title: name,
+          owner: currentUser.id,
+          description: description,
+          image: cloudImageUrl[0],
+          images: cloudImageUrl,
+          colors: colors,
+          quantity: quantity,
+          price: price,
+          category: [category]);
+
+      http.Response res =
+          await http.post(Uri.parse('$uri/seller/update-product'),
+              headers: {
+                'Content-Type': 'application/json; charset=UTF-8',
+                'x-auth-token': currentUser.token!,
+              },
+              body: product.toJson());
+
+      httpErrorHandle(
+          response: res,
+          context: context,
+          onSuccess: () {
+            showSnackBar(
+                context: context, content: 'Product Updated Successfully!');
+            Navigator.pushNamed(context, HomeScreen.routeName);
+          });
+    } catch (e) {
+      print(e.toString());
+      showSnackBar(context: context, content: e.toString());
+    }
+  }
+
+  sellProduct({
+    required BuildContext context,
+    required String name,
+    required String description,
+    required double price,
+    required int quantity,
+    required String category,
+    required List<File> images,
+    required List<Map<String, dynamic>> colors,
+  }) async {
+    final UserModel currentUser = ref.read(currentUserProvider).currentUser!;
+
+    try {
+      final cloudinary = CloudinaryPublic('ds9zqpfo7', 'rsjeh28c');
+      List<String> imageUrl = [];
+      for (int i = 0; i < images.length; i++) {
+        CloudinaryResponse res = await cloudinary.uploadFile(
+            CloudinaryFile.fromFile(images[i].path,
+                resourceType: CloudinaryResourceType.Image, folder: name));
+        imageUrl.add(res.secureUrl);
+      }
+      Product product = Product(
+          title: name,
+          owner: currentUser.id,
+          description: description,
+          image: imageUrl[0],
+          images: imageUrl,
+          colors: colors,
+          quantity: quantity,
+          price: price,
+          category: [category]);
+
+      http.Response res = await http.post(Uri.parse('$uri/seller/add-product'),
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            'x-auth-token': currentUser.token!,
+          },
+          body: product.toJson());
+      httpErrorHandle(
+          response: res,
+          context: context,
+          onSuccess: () {
+            showSnackBar(
+                context: context, content: 'Product Added Successfully!');
+            Navigator.pushNamed(context, HomeScreen.routeName);
+          });
+    } catch (e) {
+      print(e.toString());
+      showSnackBar(context: context, content: e.toString());
+    }
+  }
+
+  Future<List<Product>> fetchSearchedProduct({
+    required BuildContext context,
+    required String searchQuery,
+    String? categoryQuery,
+    required String filterQuery,
+    int? minPrice,
+    int? maxPrice,
+  }) async {
+    // final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final UserModel userProvider = ref.read(currentUserProvider).currentUser!;
+    List<Product> productList = [];
+    try {
+      http.Response res = await http.get(
+        filterQuery == 'price'
+            ? Uri.parse(
+                '$uri/api/products/search/$searchQuery?category=$categoryQuery&filter=$filterQuery&minPrice=$minPrice&maxPrice=$maxPrice')
+            : Uri.parse(
+                '$uri/api/products/search/$searchQuery?category=$categoryQuery&filter=$filterQuery'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'x-auth-token': userProvider.token!,
+        },
+      );
+      httpErrorHandle(
+        response: res,
+        context: context,
+        onSuccess: () {
+          for (int i = 0; i < jsonDecode(res.body).length; i++) {
+            productList.add(
+              Product.fromJson(jsonEncode(jsonDecode(res.body)[i])),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      showSnackBar(context: context, content: e.toString());
+    }
+    return productList;
+  }
+
+  Future<List<Product>> fetchProductByCategory({
+    required BuildContext context,
+    required String categoryId,
+  }) async {
+    // final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final UserModel userProvider = ref.read(currentUserProvider).currentUser!;
+    List<Product> productList = [];
+    try {
+      http.Response res = await http.get(
+        Uri.parse('$uri/api/products/?category=$categoryId'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'x-auth-token': userProvider.token!,
+        },
+      );
+
+      httpErrorHandle(
+        response: res,
+        context: context,
+        onSuccess: () {
+          for (int i = 0; i < jsonDecode(res.body).length; i++) {
+            productList.add(
+              Product.fromMap(jsonDecode(res.body)[i]),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      showSnackBar(context: context, content: e.toString());
+    }
+    return productList;
+  }
+
+  Future<bool> addToFavourites(String productId, BuildContext context) async {
+    final UserModel userProvider = ref.read(currentUserProvider).currentUser!;
+    List<String> favourites = [];
+    try {
+      http.Response res = await http.post(
+        Uri.parse('$uri/api/favourites'),
+        body: jsonEncode({"id": productId}),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'x-auth-token': userProvider.token!,
+        },
+      );
+
+      httpErrorHandle(
+        response: res,
+        context: context,
+        onSuccess: () {
+          UserModel user = ref
+              .read(currentUserProvider)
+              .currentUser!
+              .copyWith(favourites: jsonDecode(res.body));
+          ref.read(currentUserProvider).setUser(user, context);
+        },
+      );
+
+      return true;
+    } catch (e) {
+      showSnackBar(context: context, content: e.toString());
+    }
+    return false;
+  }
+
+  Future<Product?> fetchProductById({
+    required BuildContext context,
+    required String productId,
+  }) async {
+    // final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final UserModel userProvider = ref.read(currentUserProvider).currentUser!;
+    Product? product;
+    try {
+      http.Response res = await http.get(
+        Uri.parse('$uri/api/products-by-id/$productId'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'x-auth-token': userProvider.token!,
+        },
+      );
+
+      httpErrorHandle(
+        response: res,
+        context: context,
+        onSuccess: () {
+          product = Product.fromJson(res.body);
+        },
+      );
+    } catch (e) {
+      showSnackBar(context: context, content: e.toString());
+    }
+    return product;
+  }
+
+  Future<List<Category>> fetchCategories({
+    required BuildContext context,
+  }) async {
+    // final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final UserModel userProvider = ref.read(currentUserProvider).currentUser!;
+    List<Category> categories = [];
+    try {
+      http.Response res = await http.get(
+        Uri.parse('$uri/api/categories'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'x-auth-token': userProvider.token!,
+        },
+      );
+
+      httpErrorHandle(
+        response: res,
+        context: context,
+        onSuccess: () {
+          List loopable = jsonDecode(res.body);
+          for (int i = 0; i < loopable.length; i++) {
+            categories.add(Category.fromMap(loopable[i]));
+          }
+        },
+      );
+    } catch (e) {
+      showSnackBar(context: context, content: e.toString());
+    }
+    _fetchedCategories = categories;
+    notifyListeners();
+    return categories;
+  }
+
+  Future<Product?> rateProduct(
+      String id, double rating, BuildContext context) async {
+    Product? temp;
+    try {
+      final url = Uri.parse('$uri/api/rate-product');
+      final UserModel userProvider = ref.read(currentUserProvider).currentUser!;
+      final response = await http.post(url,
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            'x-auth-token': userProvider.token!,
+          },
+          body: json.encode({'id': id, 'rating': rating}));
+      httpErrorHandle(
+        response: response,
+        context: context,
+        onSuccess: () {
+          temp = Product.fromJson(response.body);
+        },
+      );
+    } catch (e) {
+      showSnackBar(context: context, content: e.toString());
+    }
+    return temp;
+  }
+
+  Future<List<Product>> fetchPopularProducts({
+    required BuildContext context,
+  }) async {
+    // final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final UserModel userProvider = ref.read(currentUserProvider).currentUser!;
+    List<Product> productList = [];
+    try {
+      http.Response res = await http.get(
+        Uri.parse('$uri/api/popular-products/'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'x-auth-token': userProvider.token!,
+        },
+      );
+
+      httpErrorHandle(
+        response: res,
+        context: context,
+        onSuccess: () {
+          for (int i = 0; i < jsonDecode(res.body).length; i++) {
+            productList.add(
+              Product.fromJson(jsonDecode(res.body)[i]),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      showSnackBar(context: context, content: e.toString());
+    }
+    return productList;
+  }
+  // void addProduct(Map<String, dynamic> map, BuildContext context) async {
+  //   try {
+  //     http.Response res = await http.post(
+  //       Uri.parse('$uri/seller/add-product'),
+  //       body: json.encode({map}),
+  //       headers: <String, String>{
+  //         'Content-Type': 'application/json; charset=UTF-8',
+  //       },
+  //     );
+  //     bool isOk = httpErrorHandle(
+  //       response: res,
+  //       context: context,
+  //       onSuccess: () {
+  //         showSnackBar(context: context, content: 'Product created');
+  //       },
+  //     );
+  //     if (isOk) {
+  //       //////////////////////////////////////////////////////////////////////////////
+  //       _products.add(Product.fromMap(res.body));
+  //     }
+  //   } catch (e) {
+  //     showSnackBar(context: context, content: 'Something went wrong');
+  //   }
+  // }
+
+  // void updateProduct(Product product, BuildContext context) async {
+  //   try {
+  //     http.Response res = await http.post(
+  //       Uri.parse('$uri/seller/update-product'),
+  //       body: product.toMap(),
+  //       headers: <String, String>{
+  //         'Content-Type': 'application/json; charset=UTF-8',
+  //       },
+  //     );
+  //     bool isOk = httpErrorHandle(
+  //       response: res,
+  //       context: context,
+  //       onSuccess: () {
+  //         showSnackBar(context: context, content: 'Product updated');
+  //       },
+  //     );
+  //     if (isOk) {
+  //       // Product updatedProduct = Product.fr(res.body);
+  //       Product updatedProduct = product;
+  //       _products[_products.indexWhere(
+  //           (element) => element.id == updatedProduct.id)] = updatedProduct;
+  //     }
+  //   } catch (e) {
+  //     showSnackBar(context: context, content: 'Something went wrong');
+  //   }
+  // }
+
+}

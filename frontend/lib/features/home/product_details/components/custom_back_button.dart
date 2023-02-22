@@ -7,6 +7,7 @@ class CustomBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: SizeConfig.getProportionateScreenWidth(20),

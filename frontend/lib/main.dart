@@ -1,8 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:store/features/bloc/favorite/favorite_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/features/auth/repository/auth_repository.dart';
+import 'package:store/features/bloc/current_user/current_user.dart';
 import 'package:store/features/bloc/order/order_bloc.dart';
+import 'package:store/features/home/screens/home_screen.dart';
 import 'package:store/splash/splash_screen.dart';
 import 'common/constants/routes.dart';
 import 'features/bloc/cart/cart_bloc.dart';
@@ -14,37 +17,45 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp( MyApp());
+  runApp(ProviderScope(
+    child: MyApp(),
+  ));
 }
 
-class MyApp extends StatelessWidget {
-
-
+class MyApp extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
-
+  Widget build(BuildContext context, WidgetRef ref) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<FavoriteBloc>(
-          create: (_) => FavoriteBloc(),
-        ),
+        // BlocProvider<FavoriteBloc>(
+        //   create: (_) => FavoriteBloc(),
+        // ),
         BlocProvider<SearchBloc>(
           create: (_) => SearchBloc(),
-        ),
-        BlocProvider<OrderBloc>(
-          create: (_) => OrderBloc(),
-        ),
-        BlocProvider<CartBloc>(
-          create: (_) => CartBloc(),
         ),
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Your Store',
           theme: ThemeData(fontFamily: 'Raleway'),
-          initialRoute: SplashScreen.routeName,
-          routes: routes
-      ),
+          // initialRoute: SplashScreen.routeName,
+          home: ref.watch(userDataAuthProvider).when(
+              data: (user) {
+                if (user == null) {
+                  return SplashScreen();
+                }
+                ref.read(currentUserProvider).setUser(user, context);
+                return HomeScreen();
+              },
+              error: (error, trace) {
+                return Center(child: Text(error.toString()));
+              },
+              loading: () => const Scaffold(
+                    body: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )),
+          routes: routes),
     );
   }
 }

@@ -69,7 +69,7 @@ class SqliteDbHelper{
   Future<int> insertUser(UserModel user) async{
     final Database database = await db;
     try{
-      final List<Map<String,dynamic>> records = await database.query("users",where: "email = ?",whereArgs: [user.email]);
+      final List<Map<String,dynamic>> records = await database.query("users",where: "phoneNumber = ?",whereArgs: [user.phoneNumber]);
       if(kDebugMode){
         print(records.length);
       }
@@ -90,17 +90,17 @@ class SqliteDbHelper{
 
     return 0;
   }
-  Future<bool> checkIdentity({required email,required password}) async{
+  Future<bool> checkIdentity({required phoneNumber,required password}) async{
     Database database = await _sqliteDbHelper.db;
-    final List<Map<String,dynamic>> records = await database.query("users",where: "email = ? and password =?",whereArgs: [email,password]);
+    final List<Map<String,dynamic>> records = await database.query("users",where: "phoneNumber = ? and password =?",whereArgs: [phoneNumber,password]);
     if(records.length ==1){
       return true;
     }
     return false;
   }
-  Future<bool> checkEmail({required email}) async{
+  Future<bool> checkEmail({required phoneNumber}) async{
     Database database = await _sqliteDbHelper.db;
-    final List<Map<String,dynamic>> records = await database.query("users",where: "email = ?",whereArgs: [email]);
+    final List<Map<String,dynamic>> records = await database.query("users",where: "phoneNumber = ?",whereArgs: [phoneNumber]);
     if(records.length ==1){
       return true;
     }

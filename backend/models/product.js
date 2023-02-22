@@ -2,21 +2,38 @@ const mongoose = require("mongoose");
 const ratingSchema = require("./rating");
 
 const productSchema = mongoose.Schema({
-  name: {
+  title: {
     type: String,
     required: true,
     trim: true,
+  },
+  owner: {
+    type: mongoose.Types.ObjectId,
+    required: true
   },
   description: {
     type: String,
     required: true,
     trim: true,
   },
+  image: {type: String},
   images: [
     {
       type: String,
       required: true,
     },
+  ],
+  colors: [
+    {
+      colorName: {
+        required: true,
+        type : String
+      },
+      color: {
+        required: true,
+        type : String
+      }
+    }
   ],
   quantity: {
     type: Number,
@@ -26,10 +43,10 @@ const productSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
-  category: {
-    type: String,
+  category: [{
+    type: mongoose.Types.ObjectId,
     required: true,
-  },
+  }],
   ratings: [ratingSchema],
 });
 

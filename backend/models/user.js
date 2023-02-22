@@ -2,11 +2,23 @@ const mongoose = require("mongoose");
 const { productSchema } = require("./product");
 
 const userSchema = mongoose.Schema({
-  name: {
+  firstName: {
     required: true,
     type: String,
     trim: true,
   },
+  profilePic: {
+    type: String,
+  },
+  lastName: {
+    required: true,
+    type: String,
+    trim: true,
+  },
+  phoneNumber: {required: true,
+    type: String,
+    trim: true},
+
   email: {
     required: true,
     type: String,
@@ -41,6 +53,7 @@ const userSchema = mongoose.Schema({
       },
     },
   ],
+  favourites: [{type: mongoose.Types.ObjectId, ref: "products"}]
 });
 
 const User = mongoose.model("User", userSchema);

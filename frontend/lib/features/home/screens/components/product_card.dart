@@ -45,7 +45,7 @@ class _ProductCardState extends State<ProductCard> {
                     borderRadius: BorderRadius.circular(15)),
                 child: Hero(
                   tag: widget.product.id.toString(),
-                  child: Image.asset(widget.product.image),
+                  child: widget.product.image.startsWith("asset") ? Image.asset(widget.product.image) :  Image.network(widget.product.image),
                 ),
               ),
             ),
@@ -71,10 +71,10 @@ class _ProductCardState extends State<ProductCard> {
               InkWell(
                 borderRadius: BorderRadius.circular(50),
                 onTap: () {
-                  demoProducts
-                      .where((product) => (product.id == widget.product.id))
-                      .first
-                      .isFavourite = !widget.product.isFavourite;
+                  // demoProducts
+                  //     .where((product) => (product.id == widget.product.id))
+                  //     .first
+                  //     .isFavourite = !widget.product.isFavourite;
                   setState(() {});
                 },
                 child: Container(
@@ -83,16 +83,16 @@ class _ProductCardState extends State<ProductCard> {
                   height: SizeConfig.getProportionateScreenWidth(28),
                   width: SizeConfig.getProportionateScreenWidth(28),
                   decoration: BoxDecoration(
-                    color: widget.product.isFavourite
+                    color: widget.product.isFavourite == true && widget.product.isFavourite != null
                         ? primaryColor.withOpacity(0.15)
                         : secondaryColor.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    widget.product.isFavourite
+                    widget.product.isFavourite == true && widget.product.isFavourite != null
                         ? Icons.favorite
                         : Icons.favorite_border,
-                    color: widget.product.isFavourite
+                    color: widget.product.isFavourite == true && widget.product.isFavourite != null
                         ? const Color(0xFFFF4848)
                         : const Color(0xFFDBDEE4),
                     size: 20,

@@ -8,25 +8,21 @@ const auth = require("../middlewares/auth");
 // SIGN UP
 authRouter.post("/api/signup", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
-
-    const existingUser = await User.findOne({ email });
+    const { firstName, lastName, phoneNumber, password, address, type, email, cart} = req.body;
+    const existingUser = await User.findOne({ phoneNumber });
     if (existingUser) {
       return res
         .status(400)
-        .json({ msg: "User with same email already exists!" });
+        .json({ msg: "User with same phone number already exists!" });
     }
-
     const hashedPassword = await bcryptjs.hash(password, 8);
-
     let user = new User({
-      email,
-      password: hashedPassword,
-      name,
+      firstName, lastName, phoneNumber, address, email, password: hashedPassword, type, cart
     });
     user = await user.save();
-    res.json(user);
-  } catch (e) {
+    const token = jwt.sign({ id: user['_id'] }, "passwordKey");
+    res.json({...user._doc,  token });
+  } catch (e) { 
     res.status(500).json({ error: e.message });
   }
 });
@@ -35,15 +31,14 @@ authRouter.post("/api/signup", async (req, res) => {
 // Exercise
 authRouter.post("/api/signin", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { phoneNumber, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ phoneNumber });
     if (!user) {
       return res
         .status(400)
-        .json({ msg: "User with this email does not exist!" });
+        .json({ msg: "User with this phone number does not exist!" });
     }
-
     const isMatch = await bcryptjs.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ msg: "Incorrect password." });
@@ -65,7 +60,7 @@ authRouter.post("/tokenIsValid", async (req, res) => {
 
     const user = await User.findById(verified.id);
     if (!user) return res.json(false);
-    res.json(true);
+    res.json(user);
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

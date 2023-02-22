@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:store/features/home/screens/home_screen.dart';
 import 'package:store/features/widgets/default_button.dart';
 
 class NoOrder extends StatelessWidget {
@@ -44,7 +45,9 @@ class NoOrder extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 15),
           child: DefaultButton(
-            onPressed: (){},
+            onPressed: (){
+              Navigator.of(context).pushNamedAndRemoveUntil(HomeScreen.routeName, (route) => false);
+            },
             backgroundColor: const Color(0xff57bfe9),
             forgroundColor: Colors.white,
             text: "Start ordering",

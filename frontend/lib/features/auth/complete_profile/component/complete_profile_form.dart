@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:store/features/auth/repository/auth_repository.dart';
 import 'package:store/models/user.dart';
 import 'package:store/common/constants/colors.dart';
 import 'package:store/features/widgets/custom_page_transition.dart';
@@ -11,7 +14,7 @@ import 'package:store/common/constants/form_messages.dart';
 import 'package:store/features/auth/otp_screen/otp_screen.dart';
 import 'package:store/features/auth/sign_up/components/sign_up_form.dart';
 
-class CompleteProfileForm extends StatefulWidget {
+class CompleteProfileForm extends ConsumerStatefulWidget {
   final ScreenArgs userData;
   const CompleteProfileForm({Key? key, required this.userData})
       : super(key: key);
@@ -20,18 +23,17 @@ class CompleteProfileForm extends StatefulWidget {
   _CompleteProfileFormState createState() => _CompleteProfileFormState();
 }
 
-class _CompleteProfileFormState extends State<CompleteProfileForm> {
-  final SqliteDbHelper _sqliteDbHelper = SqliteDbHelper();
+class _CompleteProfileFormState extends ConsumerState<CompleteProfileForm> {
   final _formKey = GlobalKey<FormState>();
   final _firstNameFormFieldKey = GlobalKey<FormFieldState>();
+  final _emailFormFieldKey = GlobalKey<FormFieldState>();
   final _lastNameFormFieldKey = GlobalKey<FormFieldState>();
-  final _phoneNumberFormFieldKey = GlobalKey<FormFieldState>();
   final _addressFormFieldKey = GlobalKey<FormFieldState>();
   late FocusNode lastNameNode, phoneNode, addressNode;
   String? firstName;
   String? lastName;
-  String? phoneNumber;
   String? address;
+  late String? email;
   List<String?> errors = [];
 
   @override
@@ -40,6 +42,17 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
     lastNameNode = FocusNode();
     phoneNode = FocusNode();
     addressNode = FocusNode();
+  }
+
+  void signingUp() {
+    ref.read(authRepositoryProvider).verifyPhoneNumber(
+        context,
+        widget.userData.phoneNumber,
+        firstName!,
+        lastName!,
+        widget.userData.password,
+        address!,
+        email!);
   }
 
   @override
@@ -54,7 +67,7 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
             SizedBox(height: SizeConfig.getProportionateScreenHeight(30)),
             lastNameFormField(),
             SizedBox(height: SizeConfig.getProportionateScreenHeight(30)),
-            phoneNumberFormField(),
+            emailFormField(),
             SizedBox(height: SizeConfig.getProportionateScreenHeight(30)),
             addressFormField(),
             FormError(errors: errors),
@@ -67,30 +80,9 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
                   try {
-                    bool result = await _sqliteDbHelper.checkEmail(
-                        email: widget.userData.email);
-
-                    if (result) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text(
-                            "The email is already existed please try with another one"),
-                        backgroundColor: Colors.black38,
-                      ));
-                    } else {
-                      UserModel user = UserModel(
-                          firstName: firstName!,
-                          lastName: lastName!,
-                          phoneNumber: phoneNumber!,
-                          address: address!,
-                          email: widget.userData.email,
-                          password: widget.userData.password);
-                      await _sqliteDbHelper.insertUser(user);
-                      Navigator.push(
-                          context,
-                          CustomScaleTransition(
-                              nextPageUrl: OTPScreen.routeName,
-                              nextPage: const OTPScreen()));
-                    }
+                    // bool result = await _sqliteDbHelper.checkEmail(
+                    //     phoneNumber: widget.userData.phoneNumber);
+                    signingUp();
                   } on Exception {}
                 }
               },
@@ -122,38 +114,6 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
         floatingLabelBehavior: FloatingLabelBehavior.auto,
         suffixIcon:
             CustomSuffixIcon(svgIconPath: "assets/icons/Location point.svg"),
-      ),
-    );
-  }
-
-  TextFormField phoneNumberFormField() {
-    return TextFormField(
-      key: _phoneNumberFormFieldKey,
-      keyboardType: TextInputType.phone,
-      onFieldSubmitted: (newValue) {
-        addressNode.requestFocus();
-      },
-      focusNode: phoneNode,
-      onSaved: (newPhoneNumber) => phoneNumber = newPhoneNumber,
-      onChanged: (newPhoneNumber) {
-        _phoneNumberFormFieldKey.currentState!.validate();
-        phoneNumber = newPhoneNumber;
-      },
-      validator: (newPhoneNumber) {
-        if (newPhoneNumber!.isEmpty) {
-          return kPhoneNumberNullError;
-        } else if (!phoneNumberValidatorRegExp.hasMatch(newPhoneNumber)) {
-          return kValidPhoneNumberError;
-        }
-        return null;
-      },
-      decoration: const InputDecoration(
-        labelText: "Phone Number",
-        hintText: "Enter your phone number",
-        // If  you are using latest version of flutter then lable text and hint text shown like this
-        // if you r using flutter less then 1.20.* then maybe this is not working properly
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CustomSuffixIcon(svgIconPath: "assets/icons/Phone.svg"),
       ),
     );
   }
@@ -205,6 +165,31 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
       decoration: const InputDecoration(
         labelText: "Last Name",
         hintText: "Enter your last name",
+        suffixIcon: CustomSuffixIcon(svgIconPath: "assets/icons/User.svg"),
+      ),
+    );
+  }
+
+  TextFormField emailFormField() {
+    return TextFormField(
+      key: _emailFormFieldKey,
+      onSaved: (newEmail) => email = newEmail,
+      onChanged: (newEmail) {
+        _emailFormFieldKey.currentState!.validate();
+        email = newEmail;
+      },
+      validator: (email) {
+        if (email!.isEmpty) {
+          return kEmailNullError;
+        }
+        if (!emailValidatorRegExp.hasMatch(email)) {
+          return kInvalidEmailError;
+        }
+        return null;
+      },
+      decoration: const InputDecoration(
+        labelText: "email",
+        hintText: "Enter your email",
         suffixIcon: CustomSuffixIcon(svgIconPath: "assets/icons/User.svg"),
       ),
     );

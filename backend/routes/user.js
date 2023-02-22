@@ -7,7 +7,7 @@ const User = require("../models/user");
 
 userRouter.post("/api/add-to-cart", auth, async (req, res) => {
   try {
-    const { id } = req.body;
+    const { id, quantity } = req.body;
     const product = await Product.findById(id);
     let user = await User.findById(req.user);
 
@@ -25,7 +25,7 @@ userRouter.post("/api/add-to-cart", auth, async (req, res) => {
         let producttt = user.cart.find((productt) =>
           productt.product._id.equals(product._id)
         );
-        producttt.quantity += 1;
+        producttt.quantity += quantity;
       } else {
         user.cart.push({ product, quantity: 1 });
       }
@@ -37,6 +37,46 @@ userRouter.post("/api/add-to-cart", auth, async (req, res) => {
   }
 });
 
+userRouter.post("/api/favourites", auth, async (req, res) => {
+  try {
+    const { id } = req.body;
+    const product = await Product.findById(id);
+    let user = await User.findById(req.user);
+    if (user.favourites.length == 0) {
+      user.favourites.push(product);
+    } else {
+      let isProductFound = false;
+      for (let i = 0; i < user.favourites.length; i++) {
+        if (user.favourites[i]._id.equals(product._id)) {
+          isProductFound = true;
+        }
+      }
+
+      if (isProductFound) {
+        let prodId= `${product._id}`;
+        let index = user.favourites.findIndex((element) => element == prodId);
+        if (index !== -1) {
+          user.favourites.splice(index, 1);
+        }
+      } else {
+        user.favourites.push(product);
+      }
+    }
+    user = await user.save();
+    res.json(user.favourites);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+userRouter.get("/api/favourites", auth, async (req, res) => {
+  try {
+    let user = await User.findById(req.user);
+    res.json(user.favourites);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 userRouter.delete("/api/remove-from-cart/:id", auth, async (req, res) => {
   try {
     const { id } = req.params;
@@ -52,6 +92,17 @@ userRouter.delete("/api/remove-from-cart/:id", auth, async (req, res) => {
         }
       }
     }
+    user = await user.save();
+    res.json(user);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+userRouter.delete("/api/remove-products-from-cart/", auth, async (req, res) => {
+  try {
+    let user = await User.findById(req.user);
+
+    user.cart = [];
     user = await user.save();
     res.json(user);
   } catch (e) {
@@ -75,7 +126,8 @@ userRouter.post("/api/save-user-address", auth, async (req, res) => {
 // order product
 userRouter.post("/api/order", auth, async (req, res) => {
   try {
-    const { cart, totalPrice, address } = req.body;
+    const { totalPrice, address } = req.body;
+    const cart = req.body.products
     let products = [];
 
     for (let i = 0; i < cart.length; i++) {
@@ -87,10 +139,9 @@ userRouter.post("/api/order", auth, async (req, res) => {
       } else {
         return res
           .status(400)
-          .json({ msg: `${product.name} is out of stock!` });
+          .json({ msg: `${product.title} is out of stock!` });
       }
     }
-
     let user = await User.findById(req.user);
     user.cart = [];
     user = await user.save();
@@ -100,7 +151,6 @@ userRouter.post("/api/order", auth, async (req, res) => {
       totalPrice,
       address,
       userId: req.user,
-      orderedAt: new Date().getTime(),
     });
     order = await order.save();
     res.json(order);

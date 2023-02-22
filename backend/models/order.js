@@ -24,8 +24,8 @@ const orderSchema = mongoose.Schema({
     type: String,
   },
   orderedAt: {
-    type: Number,
-    required: true,
+    type: Date,
+    default: Date.now, 
   },
   status: {
     type: Number,
@@ -35,3 +35,6 @@ const orderSchema = mongoose.Schema({
 
 const Order = mongoose.model("Order", orderSchema);
 module.exports = Order;
+
+
+
