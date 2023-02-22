@@ -113,7 +113,6 @@ class _defaultButtondWidgetState extends ConsumerState<defaultButtondWidget> {
   Future<Order?> addOrder(BuildContext context) async {
     final response =
         await ref.read(ordersRepoProvider).addOrder(widget.order, context);
-    Navigator.pop(context);
     return response;
   }
 
@@ -277,9 +276,12 @@ class _defaultButtondWidgetState extends ConsumerState<defaultButtondWidget> {
                         showProgressDialog(context);
                         final res = await addOrder(context);
                         if (res != null) {
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                              OrderScreen.routeName,
-                              ModalRoute.withName(HomeScreen.routeName));
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            HomeScreen.routeName,
+                            (route) =>
+                                false, // remove all previous routes from the stack
+                          );
                         } else {
                           Navigator.of(context).pop();
                         }
