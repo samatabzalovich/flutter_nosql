@@ -96,9 +96,7 @@ class _HomeContentState extends ConsumerState<HomeContent> {
               const TextBanner(),
               // Categories component
               FutureBuilder(
-                  future: ref
-                      .read(homeRepoProvider)
-                      .fetchCategories(context: context),
+                  future:     ref.read(homeRepoProvider).fetchCategories(context: context),
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Category>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -112,7 +110,6 @@ class _HomeContentState extends ConsumerState<HomeContent> {
                         ),
                         SpecialOffers(),
                         PopularProducts(),
-
                       ],
                     );
                   }),

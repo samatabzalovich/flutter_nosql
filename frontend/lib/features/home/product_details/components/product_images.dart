@@ -45,7 +45,7 @@ class _ProductImagesState extends State<ProductImages> {
               itemCount: widget.product.images.length,
               itemBuilder: (context, index) => AspectRatio(
                 aspectRatio: 0.88,
-                child: Image.asset(widget.product.images[index]),
+                child: widget.product.images[index].startsWith("asset") ? Image.asset(widget.product.images[index]) :  Image.network(widget.product.images[index]),
               ),
             ),
           ),
@@ -90,7 +90,7 @@ class _ProductImagesState extends State<ProductImages> {
             color: primaryColor.withOpacity(_selectedImage == index ? 1 : 0),
           ),
         ),
-        child: Image.asset(widget.product.images[index]),
+        child: widget.product.images[index].startsWith("asset") ? Image.asset(widget.product.images[index]) :  Image.network(widget.product.images[index]),
       ),
     );
   }

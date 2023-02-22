@@ -45,7 +45,7 @@ class _ProductCardState extends State<ProductCard> {
                     borderRadius: BorderRadius.circular(15)),
                 child: Hero(
                   tag: widget.product.id.toString(),
-                  child: Image.asset(widget.product.image),
+                  child: widget.product.image.startsWith("asset") ? Image.asset(widget.product.image) :  Image.network(widget.product.image),
                 ),
               ),
             ),

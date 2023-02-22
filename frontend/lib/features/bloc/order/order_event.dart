@@ -1,12 +1,12 @@
-import 'package:equatable/equatable.dart';
+// import 'package:equatable/equatable.dart';
 
-abstract class OrderEvent extends Equatable{
-  const OrderEvent();
-}
+// abstract class OrderEvent extends Equatable{
+//   const OrderEvent();
+// }
 
-class FetchOrdersEvent extends OrderEvent{
-  const FetchOrdersEvent();
+// class FetchOrdersEvent extends OrderEvent{
+//   const FetchOrdersEvent();
 
-  @override
-  List<Object?> get props => [];
-}
+//   @override
+//   List<Object?> get props => [];
+// }

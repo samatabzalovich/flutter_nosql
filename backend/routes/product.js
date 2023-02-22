@@ -13,6 +13,15 @@ productRouter.get("/api/products/", auth, async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+
+productRouter.get("/api/products-by-id/:id", auth, async (req, res) => {
+  try {
+    const products = await Product.findById(req.params.id);
+    res.json(products);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 productRouter.get("/api/popular-products/", auth, async (req, res) => {
   try {
     const products = await Product.find({ category: req.query.category });
