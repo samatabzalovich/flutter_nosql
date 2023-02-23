@@ -19,8 +19,9 @@ class ProductDetailsScreen extends ConsumerWidget {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(150),
         child: CustomAppBar(
-          productId: product.id,
-          // isProductFavourite: isFav,
+          product: product,
+          productId: product.id!,
+          isProductFavourite: product.isFavourite,
         ),
       ),
       body: DetailsScreenContent(product: product),

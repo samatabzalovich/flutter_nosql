@@ -18,8 +18,7 @@ class SpecialOffers extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     Category? category = ref.watch(homeRepoProvider).selectedCategory;
     if (category == null) {
-      List<Category>? categories =
-          ref.read(homeRepoProvider).fetchedCategories;
+      List<Category>? categories = ref.read(homeRepoProvider).fetchedCategories;
       category = categories![0];
     }
     return SizedBox(
@@ -49,63 +48,59 @@ class SpecialOffers extends ConsumerWidget {
                   return CircularProgressIndicator();
                 }
 
-                  if (snapshot.data!.isEmpty) {
-                    return SizedBox(
-                          height: MediaQuery.of(context).size.height / 3,
-                          child: const Center(
-                            child: Text("There are no elements"),
-                          ),
-                        );
-                  }
-                      else {
-                        return Column(
-                          children: [
-                            SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: List.generate(
-                                    snapshot.data!.length,
-                                    (index) => Padding(
-                                      padding: const EdgeInsets.only(right: 20),
-                                      child: SpecialOfferCard(
-                                          category: snapshot
-                                              .data![index].category[0],
-                                          image: snapshot.data![index].image,
-                                          price: snapshot.data![index].price,
-                                          title: snapshot.data![index].title,
-                                          onTap: () => Navigator.pushNamed(
-                                              context,
-                                              ProductDetailsScreen.routeName,
-                                              arguments:
-                                                  snapshot.data![index])),
-                                    ),
-                                  ),
-                                )),
-                            Container(
-                              margin: const EdgeInsets.only(right: 10),
-                              color: Colors.transparent,
-                              child: GestureDetector(
-                                onTap: () {},
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    const Text("See more", style: textStyle),
-                                    SizedBox(
-                                      width: SizeConfig
-                                          .getProportionateScreenHeight(5),
-                                    ),
-                                    const Icon(
-                                      Icons.arrow_forward_outlined,
-                                      color: Color(0xff5956e9),
-                                    ),
-                                  ],
-                                ),
+                if (snapshot.data!.isEmpty) {
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height / 3,
+                    child: const Center(
+                      child: Text("There are no elements"),
+                    ),
+                  );
+                } else {
+                  return Column(
+                    children: [
+                      SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: List.generate(
+                              snapshot.data!.length,
+                              (index) => Padding(
+                                padding: const EdgeInsets.only(right: 20),
+                                child: SpecialOfferCard(
+                                    category: snapshot.data![index].category[0],
+                                    image: snapshot.data![index].image,
+                                    price: snapshot.data![index].price,
+                                    title: snapshot.data![index].title,
+                                    onTap: () => Navigator.pushNamed(
+                                        context, ProductDetailsScreen.routeName,
+                                        arguments: snapshot.data![index])),
                               ),
                             ),
-                          ],
-                        );
-                      }
-                
+                          )),
+                      Container(
+                        margin: const EdgeInsets.only(right: 10),
+                        color: Colors.transparent,
+                        child: GestureDetector(
+                          onTap: () {},
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              const Text("See more", style: textStyle),
+                              SizedBox(
+                                width:
+                                    SizeConfig.getProportionateScreenHeight(5),
+                              ),
+                              const Icon(
+                                Icons.arrow_forward_outlined,
+                                color: Color(0xff5956e9),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+
                 // else {
                 //   return Expanded(
                 //     child: Center(

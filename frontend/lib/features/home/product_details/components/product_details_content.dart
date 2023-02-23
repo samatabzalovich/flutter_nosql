@@ -86,7 +86,7 @@ class _DetailsScreenContentState extends ConsumerState<DetailsScreenContent> {
                       Product? temp = await ref
                           .read(homeRepoProvider)
                           .rateProduct(
-                              widget.product.id, initialRating, context);
+                              widget.product.id!, initialRating, context);
                       setState(() {
                         isloading = false;
                       });

@@ -81,7 +81,7 @@ class UserModel {
 
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
-  
+
     result.addAll({'_id': id});
     result.addAll({'firstName': firstName});
     result.addAll({'lastName': lastName});
@@ -90,17 +90,17 @@ class UserModel {
     result.addAll({'email': email});
     result.addAll({'password': password});
     result.addAll({'type': type});
-    if(profilePic != null){
+    if (profilePic != null) {
       result.addAll({'profilePic': profilePic});
     }
-    if(token != null){
+    if (token != null) {
       result.addAll({'token': token});
     }
     result.addAll({'cart': cart.map((x) => x.toMap()).toList()});
-    if(favourites != null){
+    if (favourites != null) {
       result.addAll({'favourites': favourites});
     }
-  
+
     return result;
   }
 
